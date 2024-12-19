@@ -1,6 +1,6 @@
 # dl_project
 
-Deep Learning Project
+Deep Learning - Plant Seedlings Classification
 
 Report available at:\
 https://luckerma.github.io/dl_project/

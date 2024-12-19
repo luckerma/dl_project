@@ -1,6 +1,6 @@
 ---
-title: "Deep Learning"
-subtitle: "UGE: M2 SIA - Project Report"
+title: "Plant Seedlings Classification"
+subtitle: "UGE: M2 SIA - DL Project Report"
 authors:
   - name: "Luca Uckermann"
     affiliation:
@@ -16,6 +16,12 @@ authors:
         name: "Université Gustave Eiffel"
         city: "Champs-sur-Marne"
         country: "France"
+  - name: "Jonas Möller"
+    affiliation:
+      - id: UBIE
+        name: "Bielefeld University"
+        city: "Bielefeld"
+        country: "Germany"
 
 bibliography: references.bib
 date: last-modified
@@ -34,9 +40,56 @@ abstract: |
   Abstract
 ---
 
-# Introduction
+# Introduction & Problem Understanding
 
-Hello World! [@test]
+## Context and Background
+
+
+## Problem Definition and Objectives
+
+
+## Motivation and Relevance
+
+## Key Challenges
+
+
+# Model Architecture Design
+
+## Simple CNN
+
+## Pre-trained CNN
+
+## Hybrid CNN and MLP
+
+# Training Optimization Strategies
+
+## Training Algorithms & Optimizers
+
+## Learning Rate Schedules
+
+## Regularization Techniques
+
+# Model Evaluation & Validation
+
+## Validation Framework
+
+## Performance Metrics
+
+# Results & Analysis
+
+## Quantitative Results
+
+## Qualitative Results
+
+## Comparative Analysis
+
+# Conclusion & Lessons Learned
+
+## Key Takeaways
+
+## Challenges Encountered
+
+## Future Work
 
 # References
 
