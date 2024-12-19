@@ -25,7 +25,6 @@ ul.task-list li input[type="checkbox"] {
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
-  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -61,12 +60,15 @@ div.csl-indent {
 ">
 <meta name="citation_author" content="Luca Uckermann">
 <meta name="citation_author" content="Nikethan Nimalakumaran">
+<meta name="citation_author" content="Jonas Möller">
 <meta name="citation_publication_date" content="2024-12-19">
 <meta name="citation_cover_date" content="2024-12-19">
 <meta name="citation_year" content="2024">
 <meta name="citation_online_date" content="2024-12-19">
 <meta name="citation_language" content="en">
-<meta name="citation_reference" content="citation_title=Test;,citation_author=undefined Test;,citation_fulltext_html_url=http://www.test.com;">
+<meta name="citation_reference" content="citation_title=A public image database for benchmark of plant seedling classification algorithms;,citation_author=Thomas Mosgaard Giselsson;,citation_author=Rasmus Nyholm Jørgensen;,citation_author=Peter Kryger Jensen;,citation_author=Mads Dyrmann;,citation_author=Henrik Skov Midtiby;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_fulltext_html_url=http://arxiv.org/abs/1711.05458;,citation_volume=abs/1711.05458;,citation_journal_title=CoRR;">
+<meta name="citation_reference" content="citation_title=Plant seedlings classification;,citation_author=undefined inversion;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_publisher=https://kaggle.com/competitions/plant-seedlings-classification;">
+<meta name="citation_reference" content="citation_title=Plant seedlings classification;,citation_author=undefined inversion;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_publisher=www.kaggle.com/competitions/plant-seedlings-classification/overview/evaluation;">
 </head>
 
 <body>
@@ -99,6 +101,14 @@ div.csl-indent {
                 <div class="quarto-title-meta-contents">
                     <p class="affiliation">
                         Université Gustave Eiffel
+                      </p>
+                  </div>
+                      <div class="quarto-title-meta-contents">
+            <p class="author">Jonas Möller </p>
+          </div>
+                <div class="quarto-title-meta-contents">
+                    <p class="affiliation">
+                        Bielefeld University
                       </p>
                   </div>
                     </div>
@@ -136,8 +146,43 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">2</span> References</a></li>
+  <li><a href="#introduction-problem-understanding" id="toc-introduction-problem-understanding" class="nav-link active" data-scroll-target="#introduction-problem-understanding"><span class="header-section-number">1</span> Introduction &amp; Problem Understanding</a>
+  <ul class="collapse">
+  <li><a href="#context-and-background" id="toc-context-and-background" class="nav-link" data-scroll-target="#context-and-background"><span class="header-section-number">1.1</span> Context and Background</a></li>
+  <li><a href="#problem-definition-and-objectives" id="toc-problem-definition-and-objectives" class="nav-link" data-scroll-target="#problem-definition-and-objectives"><span class="header-section-number">1.2</span> Problem Definition and Objectives</a></li>
+  <li><a href="#motivation-and-relevance" id="toc-motivation-and-relevance" class="nav-link" data-scroll-target="#motivation-and-relevance"><span class="header-section-number">1.3</span> Motivation and Relevance</a></li>
+  <li><a href="#key-challenges" id="toc-key-challenges" class="nav-link" data-scroll-target="#key-challenges"><span class="header-section-number">1.4</span> Key Challenges</a></li>
+  </ul></li>
+  <li><a href="#model-architecture-design" id="toc-model-architecture-design" class="nav-link" data-scroll-target="#model-architecture-design"><span class="header-section-number">2</span> Model Architecture Design</a>
+  <ul class="collapse">
+  <li><a href="#simple-cnn" id="toc-simple-cnn" class="nav-link" data-scroll-target="#simple-cnn"><span class="header-section-number">2.1</span> Simple CNN</a></li>
+  <li><a href="#pre-trained-cnn" id="toc-pre-trained-cnn" class="nav-link" data-scroll-target="#pre-trained-cnn"><span class="header-section-number">2.2</span> Pre-trained CNN</a></li>
+  <li><a href="#hybrid-cnn-and-mlp" id="toc-hybrid-cnn-and-mlp" class="nav-link" data-scroll-target="#hybrid-cnn-and-mlp"><span class="header-section-number">2.3</span> Hybrid CNN and MLP</a></li>
+  </ul></li>
+  <li><a href="#training-optimization-strategies" id="toc-training-optimization-strategies" class="nav-link" data-scroll-target="#training-optimization-strategies"><span class="header-section-number">3</span> Training Optimization Strategies</a>
+  <ul class="collapse">
+  <li><a href="#training-algorithms-optimizers" id="toc-training-algorithms-optimizers" class="nav-link" data-scroll-target="#training-algorithms-optimizers"><span class="header-section-number">3.1</span> Training Algorithms &amp; Optimizers</a></li>
+  <li><a href="#learning-rate-schedules" id="toc-learning-rate-schedules" class="nav-link" data-scroll-target="#learning-rate-schedules"><span class="header-section-number">3.2</span> Learning Rate Schedules</a></li>
+  <li><a href="#regularization-techniques" id="toc-regularization-techniques" class="nav-link" data-scroll-target="#regularization-techniques"><span class="header-section-number">3.3</span> Regularization Techniques</a></li>
+  </ul></li>
+  <li><a href="#model-evaluation-validation" id="toc-model-evaluation-validation" class="nav-link" data-scroll-target="#model-evaluation-validation"><span class="header-section-number">4</span> Model Evaluation &amp; Validation</a>
+  <ul class="collapse">
+  <li><a href="#validation-framework" id="toc-validation-framework" class="nav-link" data-scroll-target="#validation-framework"><span class="header-section-number">4.1</span> Validation Framework</a></li>
+  <li><a href="#performance-metrics" id="toc-performance-metrics" class="nav-link" data-scroll-target="#performance-metrics"><span class="header-section-number">4.2</span> Performance Metrics</a></li>
+  </ul></li>
+  <li><a href="#results-analysis" id="toc-results-analysis" class="nav-link" data-scroll-target="#results-analysis"><span class="header-section-number">5</span> Results &amp; Analysis</a>
+  <ul class="collapse">
+  <li><a href="#quantitative-results" id="toc-quantitative-results" class="nav-link" data-scroll-target="#quantitative-results"><span class="header-section-number">5.1</span> Quantitative Results</a></li>
+  <li><a href="#qualitative-results" id="toc-qualitative-results" class="nav-link" data-scroll-target="#qualitative-results"><span class="header-section-number">5.2</span> Qualitative Results</a></li>
+  <li><a href="#comparative-analysis" id="toc-comparative-analysis" class="nav-link" data-scroll-target="#comparative-analysis"><span class="header-section-number">5.3</span> Comparative Analysis</a></li>
+  </ul></li>
+  <li><a href="#conclusion-lessons-learned" id="toc-conclusion-lessons-learned" class="nav-link" data-scroll-target="#conclusion-lessons-learned"><span class="header-section-number">6</span> Conclusion &amp; Lessons Learned</a>
+  <ul class="collapse">
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">6.1</span> Key Takeaways</a></li>
+  <li><a href="#challenges-encountered" id="toc-challenges-encountered" class="nav-link" data-scroll-target="#challenges-encountered"><span class="header-section-number">6.2</span> Challenges Encountered</a></li>
+  <li><a href="#future-work" id="toc-future-work" class="nav-link" data-scroll-target="#future-work"><span class="header-section-number">6.3</span> Future Work</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">7</span> References</a></li>
   </ul>
 </nav>
 </div>
@@ -150,16 +195,82 @@ div.csl-indent {
   
 
 
-<section id="introduction" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
-<p>Hello World! <span class="citation" data-cites="test">(<a href="#ref-test" role="doc-biblioref">Test n.d.</a>)</span></p>
+<section id="introduction-problem-understanding" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction &amp; Problem Understanding</h1>
+<section id="context-and-background" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="context-and-background"><span class="header-section-number">1.1</span> Context and Background</h2>
 </section>
-<section id="references" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> References</h1>
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
-<div id="ref-test" class="csl-entry" role="listitem">
-Test. n.d. <span>“Test.”</span> Accessed January 1, 2019. <a href="http://www.test.com">http://www.test.com</a>.
-</div>
+<section id="problem-definition-and-objectives" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="problem-definition-and-objectives"><span class="header-section-number">1.2</span> Problem Definition and Objectives</h2>
+</section>
+<section id="motivation-and-relevance" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="motivation-and-relevance"><span class="header-section-number">1.3</span> Motivation and Relevance</h2>
+</section>
+<section id="key-challenges" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="key-challenges"><span class="header-section-number">1.4</span> Key Challenges</h2>
+</section>
+</section>
+<section id="model-architecture-design" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Model Architecture Design</h1>
+<section id="simple-cnn" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="simple-cnn"><span class="header-section-number">2.1</span> Simple CNN</h2>
+</section>
+<section id="pre-trained-cnn" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="pre-trained-cnn"><span class="header-section-number">2.2</span> Pre-trained CNN</h2>
+</section>
+<section id="hybrid-cnn-and-mlp" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="hybrid-cnn-and-mlp"><span class="header-section-number">2.3</span> Hybrid CNN and MLP</h2>
+</section>
+</section>
+<section id="training-optimization-strategies" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Training Optimization Strategies</h1>
+<section id="training-algorithms-optimizers" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="training-algorithms-optimizers"><span class="header-section-number">3.1</span> Training Algorithms &amp; Optimizers</h2>
+</section>
+<section id="learning-rate-schedules" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="learning-rate-schedules"><span class="header-section-number">3.2</span> Learning Rate Schedules</h2>
+</section>
+<section id="regularization-techniques" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="regularization-techniques"><span class="header-section-number">3.3</span> Regularization Techniques</h2>
+</section>
+</section>
+<section id="model-evaluation-validation" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Model Evaluation &amp; Validation</h1>
+<section id="validation-framework" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="validation-framework"><span class="header-section-number">4.1</span> Validation Framework</h2>
+</section>
+<section id="performance-metrics" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="performance-metrics"><span class="header-section-number">4.2</span> Performance Metrics</h2>
+</section>
+</section>
+<section id="results-analysis" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Results &amp; Analysis</h1>
+<section id="quantitative-results" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="quantitative-results"><span class="header-section-number">5.1</span> Quantitative Results</h2>
+</section>
+<section id="qualitative-results" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="qualitative-results"><span class="header-section-number">5.2</span> Qualitative Results</h2>
+</section>
+<section id="comparative-analysis" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="comparative-analysis"><span class="header-section-number">5.3</span> Comparative Analysis</h2>
+</section>
+</section>
+<section id="conclusion-lessons-learned" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Conclusion &amp; Lessons Learned</h1>
+<section id="key-takeaways" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">6.1</span> Key Takeaways</h2>
+</section>
+<section id="challenges-encountered" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="challenges-encountered"><span class="header-section-number">6.2</span> Challenges Encountered</h2>
+</section>
+<section id="future-work" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="future-work"><span class="header-section-number">6.3</span> Future Work</h2>
+</section>
+</section>
+<section id="references" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> References</h1>
+<div id="refs" role="list">
+
 </div>
 </section>
 
