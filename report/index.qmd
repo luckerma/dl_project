@@ -44,40 +44,227 @@ abstract: |
 
 ## Context and Background
 
+The "Plant Seedlings Classification" challenge, hosted on Kaggle [@plant-seedlings-classification], presents a real-world problem central to modern agriculture: accurately identifying the species of young seedlings from digital images.
+
+The dataset described by the paper "A Public Image Database for Benchmark of Plant Seedling Classification Algorithms" [@DBLP:journals/corr/abs-1711-05458] comprises images of approximately *960* unique plants, representing *12* different species. Each image captures a seedling at various growth stages and under diverse conditions, reflecting the complexities found in real-world agricultural environments. These conditions include differences in lighting, background soil patterns, and subtle phenotypic variations that can blur the lines between certain species. The evaluation metric of the competition is a mean F-score (micro-averaged F1-score), which encourages balanced performance across all classes [@plant-seedlings-classification-evaluation]:
+
+$$
+\text{Precision}_{\text{micro}} = \frac{\sum_{k \in C} TP_k}{\sum_{k \in C} TP_k + FP_k}
+$$ {#eq-precision}
+
+$$
+\text{Recall}_{\text{micro}} = \frac{\sum_{k \in C} TP_k}{\sum_{k \in C} TP_k + FN_k}
+$$ {#eq-recall}
+
+$$
+F1_{\text{micro}} = \frac{2 \cdot \text{Precision}_{\text{micro}} \cdot \text{Recall}_{\text{micro}}}{\text{Precision}_{\text{micro}} + \text{Recall}_{\text{micro}}}
+$$ {#eq-fscore}
+
+where $TP_i$, $FP_i$, and $FN_i$ represent the true positive, false positive, and false negative counts for class $i$, respectively, and $C$ denotes the set of all classes. The mean F-score (@eq-fscore) is a balanced measure that considers both precision (@eq-precision) and recall (@eq-recall) across all classes, making it a suitable evaluation metric for multi-class classification tasks.
 
 ## Problem Definition and Objectives
 
+The core objective of the challenge is to build an automated classification model that can take a seedling image as input and accurately predict its species. The following points summarize the task:
 
-## Motivation and Relevance
+- **Input:** A single image of a seedling.
+- **Output:** A predicted class label representing one of the 12 species.
+- **Goal:** Achieve high classification performance, as measured by the @eq-fscore.
+
+## Dataset Overview
+
+To gain a better understanding of the dataset, a brief overview of the class distribution and sample images is provided below:
+
+![Class Distribution](resources/class_distribution.png){#fig-class-distribution}
+
+@fig-class-distribution shows the distribution of classes in the dataset, with each bar representing the number of images per class. The dataset is imbalanced, with some classes having significantly fewer samples than others. This imbalance can pose challenges for model training, as the model may struggle to learn the features of underrepresented classes effectively. The most common classes are "Loose Silky-bent" and "Common Chickweed," while the least common classes are "Common wheat" and "Maize".
+
+![Sample Images](resources/sample_images.png){#fig-sample-images}
+
+@fig-sample-images displays a sample image for each class from the dataset, showcasing the visual diversity of seedlings across the different species. The images vary in terms of background, lighting, and growth stage, highlighting the challenges of visual similarity among species.
 
 ## Key Challenges
 
+Developing robust classification models for this task is non-trivial. Several challenges arise:
+
+1. **Visual Similarity Among Species:** Certain seedlings may appear strikingly similar, making it difficult for both humans and machines to distinguish between them.
+2. **Intra-Class Variability:** Even within a single species, seedlings can vary significantly in appearance due to differences in growth stage, lighting, and background. This variability challenges models to learn consistent features that generalize well.
+3. **Data Limitations:** With approximately 960 unique plants, the dataset might be considered modest for training deep learning models from scratch. While data augmentation can help to some extent, the relatively small dataset may still limit the complexity of models that can be effectively trained without overfitting.
+4. **Model Architecture Complexity:** Choosing the right model architecture whether a custom CNN trained from scratch or a pre-trained deep CNN to learn complex visual features. Deeper models can capture more nuanced differences, but they may also be harder to train and require careful regularization to prevent overfitting.
+
+By clearly understanding these challenges and the broader context, model architectures can be proposed that face these difficulties. The subsequent chapters will delve into the strategies for model design, training optimization, and thorough evaluation, finally guiding to the approach that best addresses the core challenge of differentiating between plant seedling species.
 
 # Model Architecture Design
 
-## Simple CNN
+## Guessing Baseline
+
+As a starting point and to get familiar with the dataset and the Kaggle competition, a simple guessing baseline is implemented. The baseline assigns the most frequent class label to all test samples. This approach provides a lower bound for the model performance and serves as a reference point for evaluating the effectiveness of more sophisticated models. The head of the submission file (`submission-0.14105_Loose-Silky-bent.csv`) is shown below:
+
+```csv
+file,species
+1b490196c.png,Loose Silky-bent
+85431c075.png,Loose Silky-bent
+506347cfe.png,Loose Silky-bent
+7f46a71db.png,Loose Silky-bent
+668c1007c.png,Loose Silky-bent
+...
+```
+
+## Custom CNN
+
+The custom CNN architecture is designed to capture features relevant to plant seedling classification while being lightweight enough to train effectively on the given dataset locally. The model consists of a series of convolutional and pooling layers followed by fully connected layers to learn hierarchical features and make class predictions.
+
+![Custom CNN Architecture](resources/custom_cnn/architecture.png){#fig-custom-cnn-architecture}
+
+@fig-custom-cnn-architecture shows the described architecture.
 
 ## Pre-trained CNN
 
-## Hybrid CNN and MLP
+As an alternative to training a custom CNN from scratch, a pre-trained CNN can be used to leverage the learned features from a large-scale dataset. The pre-trained model ResNet-18 [@resnet] is utilized as a feature extractor, where the final classification layer is replaced with a new fully connected layer to predict the 12 plant seedling classes:
+
+```python
+from torchvision import models
+from torch.nn import Linear
+
+model = models.resnet18(
+    weights=models.ResNet18_Weights.DEFAULT
+)
+model.fc = Linear(
+    in_features=model.fc.in_features,
+    out_features=len(dataset.classes),
+)
+```
+
+## THIRD MODEL TODO
 
 # Training Optimization Strategies
 
 ## Training Algorithms & Optimizers
 
+All models were trained using the Adam optimizer [@kingma2017adammethodstochasticoptimization] with a learning rate of *0.001*. The Adam optimizer is a popular choice for training deep neural networks due to its adaptive learning rate mechanism and momentum-based updates. A weight decay of *1e-4* was applied to regularize the model and prevent overfitting.
+
+```python
+from torch.optim import Adam
+
+optimizer = Adam(model.parameters(),
+    lr=1e-3,
+    weight_decay=1e-4,
+)
+```
+
 ## Learning Rate Schedules
 
+To adept the learning rate during training, a learning rate scheduler was employed to reduce the learning rate by a factor of *0.5* if the validation loss did not improve for *2* epochs. This technique helps the model converge more effectively by gradually reducing the learning rate as it approaches a local minimum.
+
+```python
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+
+scheduler = ReduceLROnPlateau(
+    optimizer,
+    mode="min",
+    factor=0.5,
+    patience=2,
+)
+```
+
 ## Regularization Techniques
+
+To prevent overfitting and improve generalization, several regularization techniques were applied during training:
+
+- **Weight Decay:** L2 regularization with a weight decay of *1e-4* was applied to the optimizer to penalize large weights and prevent overfitting.
+- **Dropout:** A dropout layer with a dropout probability of *0.5* was added after the final fully connected layer to regularize the model and prevent co-adaptation of neurons.
+- **Data Augmentation:** Various data augmentation techniques, such as random rotations, flips, and color jittering, were applied to the training images to increase the diversity of the training set and improve the robustness of the model.
+
+```python
+from torch.nn import Dropout
+
+self.droupout = Dropout(p=0.5)
+
+x = self.dropout(x)
+```
+
+```python
+from torchvision import transforms
+
+transform = transforms.Compose(
+    [
+        transforms.Resize(
+            size=transform_resize
+        ),
+        transforms.RandomResizedCrop(
+            size=transform_resize,
+            scale=(0.8, 1.0),
+            ratio=(0.9, 1.1),
+        ),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomVerticalFlip(),
+        transforms.RandomRotation(
+            degrees=360
+        ),
+        transforms.ColorJitter(
+            brightness=0.1,
+            contrast=0.1,
+            saturation=0.1,
+            hue=0.1,
+        ),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=transform_mean,
+            std=transform_std,
+        ),
+    ]
+)
+```
 
 # Model Evaluation & Validation
 
 ## Validation Framework
 
+To evaluate the performance of the models during training, the dataset was split into training and validation sets using a stratified split with a ratio of *80:20*. The validation set was used to monitor the performance during training and prevent overfitting.
+
+```python
+from sklearn.model_selection import train_test_split
+from torch.utils.data import Subset
+
+labels = [label for _, label in dataset.samples]
+train_indices, val_indices = train_test_split(
+    range(len(dataset)),
+    test_size=0.2,
+    stratify=labels,
+    random_state=RANDOM_SEED
+)
+
+train_dataset = Subset(dataset, train_indices)
+val_dataset = Subset(dataset, val_indices)
+```
+
+As the dataset is imbalanced, a stratified split was used to ensure that the class distribution in the training and validation sets is similar. This helps prevent the model from overfitting to the training set and ensures that it generalizes well to unseen data.
+
+This split results in a training set with *3800* and a validation set with *950* samples (see @fig-train-vald-split):
+
+![Training and Validation Set Sizes](resources/train_vald_split.png){#fig-train-vald-split}
+
+As there are no labels for the test set, the validation set serves as a proxy for evaluating the performance of the model on unseen data. The validation loss and accuracy were monitored during training to assess the model's convergence and generalization capabilities.
+
 ## Performance Metrics
+
+Besides the losses, the validation accuracy is tracked during training to monitor the performance of the models. The accuracy is calculated as the ratio of correctly predicted samples to the total number of samples in the validation set:
+
+$$
+\text{Accuracy} = \frac{\text{Number of Correct Predictions}}{\text{Total Number of Samples}}
+$$ {#eq-accuracy}
+
+The accuracy (@eq-accuracy) provides a simple and intuitive measure of the performance on the validation set.
 
 # Results & Analysis
 
 ## Quantitative Results
+
+In the following the best results for each model are presented:
+
+- **Guessing Baseline:** The guessing baseline achieved an F1-score of *0.14105* on the test set.
+- **Custom CNN:** The custom CNN achieved an F1-score of *0.92695* on the test set.
+- **Pre-trained CNN:** The pre-trained CNN achieved an F1-score of *0.96095* on the test set.
+- **Third approach**: TODO
 
 ## Qualitative Results
 
