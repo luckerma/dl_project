@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-12-21">
+<meta name="dcterms.date" content="2024-12-28">
 
 <title>Plant Seedlings Classification</title>
 <style>
@@ -123,17 +123,18 @@ window.Quarto = {
 </script>
 
 <meta name="citation_title" content="Plant Seedlings Classification">
-<meta name="citation_abstract" content="Abstract
+<meta name="citation_abstract" content="This paper explores the Plant Seedlings Classification dataset, which consists of images representing *12* plant species. Several deep learning approaches are presented, including a custom CNN trained from scratch and a pre-trained CNN (ResNet-18) tuned for this classification task. To mitigate the challenges of data scarcity and class imbalance, extensive data augmentation techniques such as random rotations, flips and color jittering are employed. Results show that transfer learning with ResNet-18 outperforms the custom model, achieving a mean F1 score (micro-averaged) of 0.96095 on the test set. The custom CNN, while slightly less accurate, still achieves a competitive F1 score of 0.92695, demonstrating that even smaller locally trained architectures can be viable if carefully designed and thoroughly regularized. Finally, potential solutions are outlined, including model ensembling, deeper architectures, synthetic augmentation and interpretability measures, to further improve seedling classification performance.
 ">
 <meta name="citation_author" content="Luca Uckermann">
 <meta name="citation_author" content="Nikethan Nimalakumaran">
 <meta name="citation_author" content="Jonas Möller">
-<meta name="citation_publication_date" content="2024-12-21">
-<meta name="citation_cover_date" content="2024-12-21">
+<meta name="citation_publication_date" content="2024-12-28">
+<meta name="citation_cover_date" content="2024-12-28">
 <meta name="citation_year" content="2024">
-<meta name="citation_online_date" content="2024-12-21">
+<meta name="citation_online_date" content="2024-12-28">
 <meta name="citation_language" content="en">
 <meta name="citation_reference" content="citation_title=A public image database for benchmark of plant seedling classification algorithms;,citation_author=Thomas Mosgaard Giselsson;,citation_author=Rasmus Nyholm Jørgensen;,citation_author=Peter Kryger Jensen;,citation_author=Mads Dyrmann;,citation_author=Henrik Skov Midtiby;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_fulltext_html_url=http://arxiv.org/abs/1711.05458;,citation_volume=abs/1711.05458;,citation_journal_title=CoRR;">
+<meta name="citation_reference" content="citation_title=Deep residual learning for image recognition;,citation_author=Kaiming He;,citation_author=Xiangyu Zhang;,citation_author=Shaoqing Ren;,citation_author=Jian Sun;,citation_publication_date=2015;,citation_cover_date=2015;,citation_year=2015;,citation_fulltext_html_url=http://arxiv.org/abs/1512.03385;,citation_volume=abs/1512.03385;,citation_journal_title=CoRR;">
 <meta name="citation_reference" content="citation_title=Adam: A method for stochastic optimization;,citation_author=Diederik P. Kingma;,citation_author=Jimmy Ba;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_fulltext_html_url=https://arxiv.org/abs/1412.6980;">
 <meta name="citation_reference" content="citation_title=Plant seedlings classification;,citation_author=undefined inversion;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_publisher=https://kaggle.com/competitions/plant-seedlings-classification;">
 <meta name="citation_reference" content="citation_title=Plant seedlings classification;,citation_author=undefined inversion;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_publisher=www.kaggle.com/competitions/plant-seedlings-classification/overview/evaluation;">
@@ -187,7 +188,7 @@ window.Quarto = {
                 <div>
             <div class="quarto-title-meta-heading">Published</div>
             <div class="quarto-title-meta-contents">
-              <p class="date">December 21, 2024</p>
+              <p class="date">December 28, 2024</p>
             </div>
           </div>
           
@@ -201,7 +202,7 @@ window.Quarto = {
     <div>
       <div class="abstract">
         <div class="block-title">Abstract</div>
-        <p>Abstract</p>
+        <p>This paper explores the Plant Seedlings Classification dataset, which consists of images representing <em>12</em> plant species. Several deep learning approaches are presented, including a custom CNN trained from scratch and a pre-trained CNN (ResNet-18) tuned for this classification task. To mitigate the challenges of data scarcity and class imbalance, extensive data augmentation techniques such as random rotations, flips and color jittering are employed. Results show that transfer learning with ResNet-18 outperforms the custom model, achieving a mean F1 score (micro-averaged) of 0.96095 on the test set. The custom CNN, while slightly less accurate, still achieves a competitive F1 score of 0.92695, demonstrating that even smaller locally trained architectures can be viable if carefully designed and thoroughly regularized. Finally, potential solutions are outlined, including model ensembling, deeper architectures, synthetic augmentation and interpretability measures, to further improve seedling classification performance.</p>
       </div>
     </div>
 
@@ -269,7 +270,7 @@ window.Quarto = {
 <section id="context-and-background" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="context-and-background"><span class="header-section-number">1.1</span> Context and Background</h2>
 <p>The “Plant Seedlings Classification” challenge, hosted on Kaggle <span class="citation" data-cites="plant-seedlings-classification">(<a href="#ref-plant-seedlings-classification" role="doc-biblioref">inversion 2017a</a>)</span>, presents a real-world problem central to modern agriculture: accurately identifying the species of young seedlings from digital images.</p>
-<p>The dataset described by the paper “A Public Image Database for Benchmark of Plant Seedling Classification Algorithms” <span class="citation" data-cites="DBLP:journals/corr/abs-1711-05458">(<a href="#ref-DBLP:journals/corr/abs-1711-05458" role="doc-biblioref">Giselsson et al. 2017</a>)</span> comprises images of approximately <em>960</em> unique plants, representing <em>12</em> different species. Each image captures a seedling at various growth stages and under diverse conditions, reflecting the complexities found in real-world agricultural environments. These conditions include differences in lighting, background soil patterns, and subtle phenotypic variations that can blur the lines between certain species. The evaluation metric of the competition is a mean F-score (micro-averaged F1-score), which encourages balanced performance across all classes <span class="citation" data-cites="plant-seedlings-classification-evaluation">(<a href="#ref-plant-seedlings-classification-evaluation" role="doc-biblioref">inversion 2017b</a>)</span>:</p>
+<p>The dataset described in the paper “A Public Image Database for Benchmark of Plant Seedling Classification Algorithms” <span class="citation" data-cites="DBLP:journals/corr/abs-1711-05458">(<a href="#ref-DBLP:journals/corr/abs-1711-05458" role="doc-biblioref">Giselsson et al. 2017</a>)</span> contains images of approximately <em>960</em> unique plants, representing <em>12</em> different species. Each image captures a seedling at different growth stages and under different conditions, reflecting the complexities found in real-world agricultural environments. These conditions include differences in lighting, background soil patterns and subtle phenotypic variations that can blur the lines between certain species. The evaluation metric of the competition is a mean F-score (micro-averaged F1-score), which encourages balanced performance across classes <span class="citation" data-cites="plant-seedlings-classification-evaluation">(<a href="#ref-plant-seedlings-classification-evaluation" role="doc-biblioref">inversion 2017b</a>)</span>:</p>
 <p><span id="eq-precision"><span class="math display">\[
 \text{Precision}_{\text{micro}} = \frac{\sum_{k \in C} TP_k}{\sum_{k \in C} TP_k + FP_k}
 \tag{1}\]</span></span></p>
@@ -279,20 +280,20 @@ window.Quarto = {
 <p><span id="eq-fscore"><span class="math display">\[
 F1_{\text{micro}} = \frac{2 \cdot \text{Precision}_{\text{micro}} \cdot \text{Recall}_{\text{micro}}}{\text{Precision}_{\text{micro}} + \text{Recall}_{\text{micro}}}
 \tag{3}\]</span></span></p>
-<p>where <span class="math inline">\(TP_i\)</span>, <span class="math inline">\(FP_i\)</span>, and <span class="math inline">\(FN_i\)</span> represent the true positive, false positive, and false negative counts for class <span class="math inline">\(i\)</span>, respectively, and <span class="math inline">\(C\)</span> denotes the set of all classes. The mean F-score (<a href="#eq-fscore" class="quarto-xref">Equation&nbsp;3</a>) is a balanced measure that considers both precision (<a href="#eq-precision" class="quarto-xref">Equation&nbsp;1</a>) and recall (<a href="#eq-recall" class="quarto-xref">Equation&nbsp;2</a>) across all classes, making it a suitable evaluation metric for multi-class classification tasks.</p>
+<p>where <span class="math inline">\(TP_i\)</span>, <span class="math inline">\(FP_i\)</span> and <span class="math inline">\(FN_i\)</span> are the true positive, false positive and false negative counts for class <span class="math inline">\(i\)</span>, respectively and <span class="math inline">\(C\)</span> is the set of all classes. The mean F-score (<a href="#eq-fscore" class="quarto-xref">Equation&nbsp;3</a>) is a balanced measure that considers both precision (<a href="#eq-precision" class="quarto-xref">Equation&nbsp;1</a>) and recall (<a href="#eq-recall" class="quarto-xref">Equation&nbsp;2</a>) across all classes, making it a suitable evaluation metric for multi-class classification tasks.</p>
 </section>
 <section id="problem-definition-and-objectives" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="problem-definition-and-objectives"><span class="header-section-number">1.2</span> Problem Definition and Objectives</h2>
 <p>The core objective of the challenge is to build an automated classification model that can take a seedling image as input and accurately predict its species. The following points summarize the task:</p>
 <ul>
-<li><strong>Input:</strong> A single image of a seedling.</li>
-<li><strong>Output:</strong> A predicted class label representing one of the 12 species.</li>
-<li><strong>Goal:</strong> Achieve high classification performance, as measured by the <a href="#eq-fscore" class="quarto-xref">Equation&nbsp;3</a>.</li>
+<li><strong>Input:</strong> Set of 794 images of plant seedlings.</li>
+<li><strong>Output:</strong> Classification label for each image, indicating the species of the plant seedling.</li>
+<li><strong>Goal:</strong> High classification performance as measured by the <a href="#eq-fscore" class="quarto-xref">Equation&nbsp;3</a>.</li>
 </ul>
 </section>
 <section id="dataset-overview" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="dataset-overview"><span class="header-section-number">1.3</span> Dataset Overview</h2>
-<p>To gain a better understanding of the dataset, a brief overview of the class distribution and sample images is provided below:</p>
+<p>For a better understanding of the dataset, a brief overview of the class distribution and sample images is provided below:</p>
 <div id="fig-class-distribution" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-class-distribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -303,7 +304,7 @@ Figure&nbsp;1: Class Distribution
 </figcaption>
 </figure>
 </div>
-<p><a href="#fig-class-distribution" class="quarto-xref">Figure&nbsp;1</a> shows the distribution of classes in the dataset, with each bar representing the number of images per class. The dataset is imbalanced, with some classes having significantly fewer samples than others. This imbalance can pose challenges for model training, as the model may struggle to learn the features of underrepresented classes effectively. The most common classes are “Loose Silky-bent” and “Common Chickweed,” while the least common classes are “Common wheat” and “Maize”.</p>
+<p><a href="#fig-class-distribution" class="quarto-xref">Figure&nbsp;1</a> shows the distribution of classes in the dataset, with each bar representing the number of images per class. The dataset is imbalanced, with some classes having significantly fewer samples than others. This imbalance can pose a challenge for model training, as the model may struggle to learn the features of underrepresented classes effectively. The most common classes are “Loose Silky-bent” and “Common Chickweed”, while the least common classes are “Common wheat” and “Maize”.</p>
 <div id="fig-sample-images" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-sample-images-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -314,25 +315,25 @@ Figure&nbsp;2: Sample Images
 </figcaption>
 </figure>
 </div>
-<p><a href="#fig-sample-images" class="quarto-xref">Figure&nbsp;2</a> displays a sample image for each class from the dataset, showcasing the visual diversity of seedlings across the different species. The images vary in terms of background, lighting, and growth stage, highlighting the challenges of visual similarity among species.</p>
+<p><a href="#fig-sample-images" class="quarto-xref">Figure&nbsp;2</a> shows a sample image for each class in the dataset, illustrating the visual diversity in different species. The images vary in background, lighting and growth stage, highlighting the challenges of visual similarity across species.</p>
 </section>
 <section id="key-challenges" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="key-challenges"><span class="header-section-number">1.4</span> Key Challenges</h2>
-<p>Developing robust classification models for this task is non-trivial. Several challenges arise:</p>
+<p>Developing robust classification models for this task is not trivial. There are several challenges:</p>
 <ol type="1">
-<li><strong>Visual Similarity Among Species:</strong> Certain seedlings may appear strikingly similar, making it difficult for both humans and machines to distinguish between them.</li>
-<li><strong>Intra-Class Variability:</strong> Even within a single species, seedlings can vary significantly in appearance due to differences in growth stage, lighting, and background. This variability challenges models to learn consistent features that generalize well.</li>
-<li><strong>Data Limitations:</strong> With approximately 960 unique plants, the dataset might be considered modest for training deep learning models from scratch. While data augmentation can help to some extent, the relatively small dataset may still limit the complexity of models that can be effectively trained without overfitting.</li>
-<li><strong>Model Architecture Complexity:</strong> Choosing the right model architecture whether a custom CNN trained from scratch or a pre-trained deep CNN to learn complex visual features. Deeper models can capture more nuanced differences, but they may also be harder to train and require careful regularization to prevent overfitting.</li>
+<li><strong>Visual Similarity Among Species:</strong> Certain seedlings can look strikingly similar, making it difficult for both humans and machines to distinguish between them.</li>
+<li><strong>Intra-Class Variability:</strong> Even within a single species, seedlings can vary significantly in appearance due to differences in growth stage, lighting and background. This variability challenges models to learn consistent features that generalize well.</li>
+<li><strong>Data Limitations:</strong> With approximately 960 unique plants, the dataset could be considered modest for training deep learning models from scratch. While data augmentation can help to some extent, the relatively small dataset may still limit the complexity of models that can be effectively trained without overfitting.</li>
+<li><strong>Model Architecture Complexity:</strong> Choosing the right model architecture, whether a custom CNN trained from scratch or a pre-trained deep CNN, to learn complex visual features. Deeper models can capture more nuanced differences, but they can also be harder to train and require careful regularization to prevent overfitting.</li>
 </ol>
-<p>By clearly understanding these challenges and the broader context, model architectures can be proposed that face these difficulties. The subsequent chapters will delve into the strategies for model design, training optimization, and thorough evaluation, finally guiding to the approach that best addresses the core challenge of differentiating between plant seedling species.</p>
+<p>By clearly understanding these challenges and the broader context, model architectures can be proposed that address these difficulties. The following chapters discuss the strategies for model design, training optimization and thorough evaluation, ultimately leading to the approach that best addresses the core challenge of differentiating between plant seedling species.</p>
 </section>
 </section>
 <section id="model-architecture-design" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Model Architecture Design</h1>
 <section id="guessing-baseline" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="guessing-baseline"><span class="header-section-number">2.1</span> Guessing Baseline</h2>
-<p>As a starting point and to get familiar with the dataset and the Kaggle competition, a simple guessing baseline is implemented. The baseline assigns the most frequent class label to all test samples. This approach provides a lower bound for the model performance and serves as a reference point for evaluating the effectiveness of more sophisticated models. The head of the submission file (<code>submission-0.14105_Loose-Silky-bent.csv</code>) is shown below:</p>
+<p>As a starting point and to get familiar with the dataset and the Kaggle competition, a simple guessing baseline is implemented. The baseline assigns the most frequent class label to all test samples. This approach provides a lower bound on model performance and serves as a reference point for evaluating the effectiveness of more sophisticated models. The head of the submission file (<code>submission-0.14105_Loose-Silky-bent.csv</code>) is shown below:</p>
 <pre class="csv"><code>file,species
 1b490196c.png,Loose Silky-bent
 85431c075.png,Loose Silky-bent
@@ -343,7 +344,7 @@ Figure&nbsp;2: Sample Images
 </section>
 <section id="custom-cnn" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="custom-cnn"><span class="header-section-number">2.2</span> Custom CNN</h2>
-<p>The custom CNN architecture is designed to capture features relevant to plant seedling classification while being lightweight enough to train effectively on the given dataset locally. The model consists of a series of convolutional and pooling layers followed by fully connected layers to learn hierarchical features and make class predictions.</p>
+<p>The custom CNN architecture is designed to capture features relevant to seedling classification, while being lightweight enough to be effectively trained locally on the given dataset. The model consists of a series of convolutional and pooling layers followed by fully connected layers to learn hierarchical features and make class predictions.</p>
 <div id="fig-custom-cnn-architecture" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-custom-cnn-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -358,7 +359,7 @@ Figure&nbsp;3: Custom CNN Architecture
 </section>
 <section id="pre-trained-cnn" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="pre-trained-cnn"><span class="header-section-number">2.3</span> Pre-trained CNN</h2>
-<p>As an alternative to training a custom CNN from scratch, a pre-trained CNN can be used to leverage the learned features from a large-scale dataset. The pre-trained model ResNet-18 <span class="citation" data-cites="resnet">(<a href="#ref-resnet" role="doc-biblioref"><strong>resnet?</strong></a>)</span> is utilized as a feature extractor, where the final classification layer is replaced with a new fully connected layer to predict the 12 plant seedling classes:</p>
+<p>As an alternative to training a custom CNN from scratch, a pre-trained CNN can be used to leverage learned features from a large dataset. The pre-trained model ResNet-18 <span class="citation" data-cites="DBLP:journals/corr/HeZRS15">(<a href="#ref-DBLP:journals/corr/HeZRS15" role="doc-biblioref">He et al. 2015</a>)</span> is used as a feature extractor, where the final classification layer is replaced with a new fully connected layer to predict the 12 plant seedling classes:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torchvision <span class="im">import</span> models</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.nn <span class="im">import</span> Linear</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -388,7 +389,7 @@ Figure&nbsp;3: Custom CNN Architecture
 </section>
 <section id="learning-rate-schedules" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="learning-rate-schedules"><span class="header-section-number">3.2</span> Learning Rate Schedules</h2>
-<p>To adept the learning rate during training, a learning rate scheduler was employed to reduce the learning rate by a factor of <em>0.5</em> if the validation loss did not improve for <em>2</em> epochs. This technique helps the model converge more effectively by gradually reducing the learning rate as it approaches a local minimum.</p>
+<p>To adjust the learning rate during training, a learning rate scheduler was used to reduce the learning rate by a factor of <em>0.5</em> if the validation loss did not improve for <em>2</em> epochs. This technique helps the model converge more effectively by gradually reducing the learning rate as it approaches a local minimum.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.optim.lr_scheduler <span class="im">import</span> ReduceLROnPlateau</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>scheduler <span class="op">=</span> ReduceLROnPlateau(</span>
@@ -403,8 +404,8 @@ Figure&nbsp;3: Custom CNN Architecture
 <p>To prevent overfitting and improve generalization, several regularization techniques were applied during training:</p>
 <ul>
 <li><strong>Weight Decay:</strong> L2 regularization with a weight decay of <em>1e-4</em> was applied to the optimizer to penalize large weights and prevent overfitting.</li>
-<li><strong>Dropout:</strong> A dropout layer with a dropout probability of <em>0.5</em> was added after the final fully connected layer to regularize the model and prevent co-adaptation of neurons.</li>
-<li><strong>Data Augmentation:</strong> Various data augmentation techniques, such as random rotations, flips, and color jittering, were applied to the training images to increase the diversity of the training set and improve the robustness of the model.</li>
+<li><strong>Dropout:</strong> A dropout layer with a dropout probability of <em>0.5</em> was added after the fully connected layer to regularize the model and prevent co-adaptation of neurons.</li>
+<li><strong>Data Augmentation:</strong> Various data augmentation techniques such as random rotations, flips and color jittering were applied to the training images to increase the diversity of the training set and improve the robustness of the model.</li>
 </ul>
 <div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.nn <span class="im">import</span> Dropout</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -447,7 +448,7 @@ Figure&nbsp;3: Custom CNN Architecture
 <h1 data-number="4"><span class="header-section-number">4</span> Model Evaluation &amp; Validation</h1>
 <section id="validation-framework" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="validation-framework"><span class="header-section-number">4.1</span> Validation Framework</h2>
-<p>To evaluate the performance of the models during training, the dataset was split into training and validation sets using a stratified split with a ratio of <em>80:20</em>. The validation set was used to monitor the performance during training and prevent overfitting.</p>
+<p>To evaluate the performance of the models during training, the dataset was split into training and validation sets using a stratified split with a ratio of <em>80:20</em>. The validation set was used to monitor performance during training and prevent overfitting.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.utils.data <span class="im">import</span> Subset</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -461,8 +462,8 @@ Figure&nbsp;3: Custom CNN Architecture
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>train_dataset <span class="op">=</span> Subset(dataset, train_indices)</span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>val_dataset <span class="op">=</span> Subset(dataset, val_indices)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>As the dataset is imbalanced, a stratified split was used to ensure that the class distribution in the training and validation sets is similar. This helps prevent the model from overfitting to the training set and ensures that it generalizes well to unseen data.</p>
-<p>This split results in a training set with <em>3800</em> and a validation set with <em>950</em> samples (see <a href="#fig-train-vald-split" class="quarto-xref">Figure&nbsp;4</a>):</p>
+<p>Since the dataset is imbalanced, a stratified split was used to ensure that the class distribution in the training and validation sets is similar. This prevents the model from overfitting the training set and ensures that it generalizes well to unseen data.</p>
+<p>This split results in a training set of <em>3800</em> and a validation set of <em>950</em> samples (see <a href="#fig-train-vald-split" class="quarto-xref">Figure&nbsp;4</a>):</p>
 <div id="fig-train-vald-split" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-train-vald-split-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -473,31 +474,54 @@ Figure&nbsp;4: Training and Validation Set Sizes
 </figcaption>
 </figure>
 </div>
-<p>As there are no labels for the test set, the validation set serves as a proxy for evaluating the performance of the model on unseen data. The validation loss and accuracy were monitored during training to assess the model’s convergence and generalization capabilities.</p>
+<p>Since there are no labels for the test set, the validation set serves as a proxy to evaluate the performance of the model on unseen data. Validation loss and accuracy were monitored during training to assess the model’s convergence and generalization capabilities.</p>
 </section>
 <section id="performance-metrics" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="performance-metrics"><span class="header-section-number">4.2</span> Performance Metrics</h2>
-<p>Besides the losses, the validation accuracy is tracked during training to monitor the performance of the models. The accuracy is calculated as the ratio of correctly predicted samples to the total number of samples in the validation set:</p>
+<p>In addition to losses, validation accuracy is tracked during training to monitor performance of the models. Accuracy is calculated as the ratio of correctly predicted samples to the total number of samples in the validation set:</p>
 <p><span id="eq-accuracy"><span class="math display">\[
 \text{Accuracy} = \frac{\text{Number of Correct Predictions}}{\text{Total Number of Samples}}
 \tag{4}\]</span></span></p>
-<p>The accuracy (<a href="#eq-accuracy" class="quarto-xref">Equation&nbsp;4</a>) provides a simple and intuitive measure of the performance on the validation set.</p>
+<p>The accuracy (<a href="#eq-accuracy" class="quarto-xref">Equation&nbsp;4</a>) provides a simple and intuitive measure of performance on the validation set.</p>
 </section>
 </section>
 <section id="results-analysis" class="level1" data-number="5">
 <h1 data-number="5"><span class="header-section-number">5</span> Results &amp; Analysis</h1>
 <section id="quantitative-results" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="quantitative-results"><span class="header-section-number">5.1</span> Quantitative Results</h2>
-<p>In the following the best results for each model are presented:</p>
+<p>The best results for each model are presented below:</p>
 <ul>
 <li><strong>Guessing Baseline:</strong> The guessing baseline achieved an F1-score of <em>0.14105</em> on the test set.</li>
 <li><strong>Custom CNN:</strong> The custom CNN achieved an F1-score of <em>0.92695</em> on the test set.</li>
 <li><strong>Pre-trained CNN:</strong> The pre-trained CNN achieved an F1-score of <em>0.96095</em> on the test set.</li>
-<li><strong>Third approach</strong>: TODO</li>
+<li><strong>Third Approach</strong>: TODO</li>
 </ul>
 </section>
 <section id="qualitative-results" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="qualitative-results"><span class="header-section-number">5.2</span> Qualitative Results</h2>
+<p>Since the labels for the test set are not available, the qualitative results are based on the validation set.</p>
+<div id="fig-confusion-matrix-custom-cnn" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-confusion-matrix-custom-cnn-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="resources/custom_cnn/confusion.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Figure&nbsp;5: Confusion Matrix (Custom CNN)"><img src="resources/custom_cnn/confusion.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-confusion-matrix-custom-cnn-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Confusion Matrix (Custom CNN)
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-confusion-matrix-custom-cnn" class="quarto-xref">Figure&nbsp;5</a> shows the confusion matrix of the custom CNN on the validation set. The rows represent the true classes, while the columns represent the predicted classes. The diagonal elements represent the number of correct predictions for each class, while the off-diagonal elements represent the misclassifications. While there are some misclassifications without a clear pattern, the model clearly struggles to distinguish between “Loose Silky-bent” and “Black-grass”.</p>
+<div id="fig-confusion-matrix-pretrained-cnn" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-confusion-matrix-pretrained-cnn-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="resources/resnet/confusion.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Figure&nbsp;6: Confusion Matrix (Pre-trained CNN)"><img src="resources/resnet/confusion.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-confusion-matrix-pretrained-cnn-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Confusion Matrix (Pre-trained CNN)
+</figcaption>
+</figure>
+</div>
+<p>Similar to the custom CNN, <a href="#fig-confusion-matrix-pretrained-cnn" class="quarto-xref">Figure&nbsp;6</a> shows the confusion matrix of the pre-trained CNN on the validation set. The model shows the same difficulty in distinguishing between “Loose Silky-bent” and “Black-grass”.</p>
 </section>
 <section id="comparative-analysis" class="level2" data-number="5.3">
 <h2 data-number="5.3" class="anchored" data-anchor-id="comparative-analysis"><span class="header-section-number">5.3</span> Comparative Analysis</h2>
@@ -507,12 +531,15 @@ Figure&nbsp;4: Training and Validation Set Sizes
 <h1 data-number="6"><span class="header-section-number">6</span> Conclusion &amp; Lessons Learned</h1>
 <section id="key-takeaways" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">6.1</span> Key Takeaways</h2>
+<p>In this project, several strategies were explored to classify plant seedlings into 12 different species, with the overall goal of achieving robust performance as measured by the mean F1-score (micro-averaged). Data augmentation played a central role in mitigating overfitting and improving model performance. Techniques such as random rotations, flips and color jittering effectively increased the diversity of training samples, thereby improving the robustness of the learned feature representations. Meanwhile, the choice of an appropriate model architecture proved critical. A custom CNN designed and trained from scratch achieved competitive results (F1-score of 0.92695), demonstrating the potential for custom solutions even with relatively modest dataset sizes. However, the use of a pre-trained network, specifically ResNet-18, demonstrated how transfer learning can deliver superior results (F1-score of 0.96095) by building on rich feature embeddings learned from large-scale datasets. Proper validation underpinned these successes, with a stratified split ensuring balanced class distributions in both the training and validation sets. This practice not only prevented the model from overfitting to majority classes, but also enabled the careful monitoring of loss and accuracy metrics to guide training decisions.</p>
 </section>
 <section id="challenges-encountered" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="challenges-encountered"><span class="header-section-number">6.2</span> Challenges Encountered</h2>
+<p>Despite the encouraging results, several challenges remained throughout the process. The class imbalance present in the dataset contributed to occasional misclassifications, underscoring the need for robust strategies to deal with skewed data. In addition, certain class pairs, such as “Loose Silky-bent” and “Black-grass”, exhibited high visual similarity, leading to consistent confusion for both the custom and pre-trained CNNs. Overfitting remained a significant risk due to the limited dataset size, necessitating the use of multiple regularization methods including weight decay, dropout layers and data augmentation to ensure generalization. Computational constraints also played a role in decisions regarding batch size, image resolution and the complexity of architectures that could feasibly be trained within the available resources.</p>
 </section>
 <section id="future-work" class="level2" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="future-work"><span class="header-section-number">6.3</span> Future Work</h2>
+<p>Going forward, there are several opportunities to refine and extend the current results. Model ensembling, where predictions from different architectures or random initialization seeds are combined, could further improve classification accuracy by exploiting a variety of learned representations. Exploring deeper pre-trained networks such as ResNet-50, DenseNet, or EfficientNet could push the performance envelope, although careful management of overfitting will be important. Collecting additional labeled data, perhaps through targeted field sampling, would alleviate some of the constraints of class imbalance, while generative methods-such as GANs-could produce synthetic examples to strengthen underrepresented classes.</p>
 </section>
 </section>
 <section id="references" class="level1" data-number="7">
@@ -520,6 +547,9 @@ Figure&nbsp;4: Training and Validation Set Sizes
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-DBLP:journals/corr/abs-1711-05458" class="csl-entry" role="listitem">
 Giselsson, Thomas Mosgaard, Rasmus Nyholm Jørgensen, Peter Kryger Jensen, Mads Dyrmann, and Henrik Skov Midtiby. 2017. <span>“A Public Image Database for Benchmark of Plant Seedling Classification Algorithms.”</span> <em>CoRR</em> abs/1711.05458. <a href="http://arxiv.org/abs/1711.05458">http://arxiv.org/abs/1711.05458</a>.
+</div>
+<div id="ref-DBLP:journals/corr/HeZRS15" class="csl-entry" role="listitem">
+He, Kaiming, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. 2015. <span>“Deep Residual Learning for Image Recognition.”</span> <em>CoRR</em> abs/1512.03385. <a href="http://arxiv.org/abs/1512.03385">http://arxiv.org/abs/1512.03385</a>.
 </div>
 <div id="ref-plant-seedlings-classification" class="csl-entry" role="listitem">
 inversion. 2017a. <span>“Plant Seedlings Classification.”</span> <a href="https://kaggle.com/competitions/plant-seedlings-classification" class="uri">https://kaggle.com/competitions/plant-seedlings-classification</a>.
