@@ -37,7 +37,7 @@ execute:
   include: true
 
 abstract: |
-  This paper explores the Plant Seedlings Classification dataset, which consists of images representing *12* plant species. Several deep learning approaches are presented, including a custom CNN trained from scratch and a pre-trained CNN (ResNet-18) tuned for this classification task. To mitigate the challenges of data scarcity and class imbalance, extensive data augmentation techniques such as random rotations, flips and color jittering are employed. Results show that transfer learning with ResNet-18 outperforms the custom model, achieving a mean F1 score (micro-averaged) of 0.96095 on the test set. The custom CNN, while slightly less accurate, still achieves a competitive F1 score of 0.92695, demonstrating that even smaller locally trained architectures can be viable if carefully designed and thoroughly regularized. Finally, potential solutions are outlined, including model ensembling, deeper architectures, synthetic augmentation and interpretability measures, to further improve seedling classification performance.
+  This paper explores the Plant Seedlings Classification dataset, which consists of images representing *12* plant species. Several deep learning approaches are presented, including a custom CNN trained from scratch, a pre-trained CNN (ResNet-18) and a pre-trained VisionTransformer tuned for this classification task. To mitigate the challenges of data scarcity and class imbalance, extensive data augmentation techniques such as random rotations, flips and color jittering are employed. Results show that transfer learning with ResNet-18 outperforms the custom model, achieving a mean F1 score (micro-averaged) of 0.96095 on the test set. The custom CNN, while slightly less accurate, still achieves a competitive F1 score of 0.92695, demonstrating that even smaller locally trained architectures can be viable if carefully designed and thoroughly regularized. Finally, potential solutions are outlined, including model ensembling, deeper architectures, synthetic augmentation and interpretability measures, to further improve seedling classification performance.
 ---
 
 # Introduction & Problem Understanding
@@ -95,6 +95,21 @@ By clearly understanding these challenges and the broader context, model archite
 
 # Model Architecture Design
 
+To ensure deterministic results and reproducibility, the random seed *42* is set at the beginning of each script:
+
+```python
+RANDOM_SEED = 42
+
+seed(RANDOM_SEED)
+np.random.seed(RANDOM_SEED)
+
+torch.manual_seed(RANDOM_SEED)
+torch.cuda.manual_seed_all(RANDOM_SEED)
+
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+```
+
 ## Guessing Baseline
 
 As a starting point and to get familiar with the dataset and the Kaggle competition, a simple guessing baseline is implemented. The baseline assigns the most frequent class label to all test samples. This approach provides a lower bound on model performance and serves as a reference point for evaluating the effectiveness of more sophisticated models. The head of the submission file (`submission-0.14105_Loose-Silky-bent.csv`) is shown below:
@@ -134,7 +149,64 @@ model.fc = Linear(
 )
 ```
 
-## THIRD MODEL TODO
+## Pre-trained Vision Transformer (ViT)
+
+Another approach is to use a ViT [@DBLP:journals/corr/abs-2010-11929] as the backbone architecture. The ViT model is pre-trained on a large-scale dataset and then fine-tuned on the plant seedlings dataset. The final classification head is replaced with a new linear layer to predict the 12 plant seedling classes:
+
+```python
+import timm
+import torch
+
+model = timm.create_model(
+    "vit_base_patch16_224",
+    pretrained=True,
+    num_classes=num_classes
+)
+model.head = torch.nn.Linear(
+    model.head.in_features,
+    num_classes
+)
+```
+
+Instead of fine-tuning the entire model, the pre-trained weights of the `vit_base_patch16_224` model [@Wightman_PyTorch_Image_Models] are frozen, and only the classification head is trained on the plant seedlings dataset. This approach leverages the powerful feature extraction capabilities of the pre-trained model while adapting the final layer to the specific classification task. Furthermore the computational cost is reduced compared to training the entire model from scratch.
+
+```python
+for param in model.parameters():
+    param.requires_grad = False
+
+for param in model.head.parameters():
+    param.requires_grad = True
+```
+
+## Ensemble Model
+
+A final ensemble model is created by combining the predictions of all three models (custom CNN, pre-trained CNN, pre-trained ViT) using a simple weighted average. The weights are determined based on the performance of each model on the test set:
+
+```python
+import torch.nn.functional as F
+
+model_custom_cnn.eval()
+model_resnet.eval()
+model_vit.eval()
+
+w_custom_cnn = 0.25
+w_resnet = 0.25
+w_vit = 1 - w_custom_cnn - w_resnet
+
+with torch.no_grad():
+    for images, image_names in test_loader:
+        ...
+
+        probs_custom_cnn = F.softmax(model_custom_cnn(images), dim=1)
+        probs_resnet = F.softmax(model_resnet(images), dim=1)
+        probs_vit = F.softmax(model_vit(images), dim=1)
+
+        probs_ensemble = w_custom_cnn * probs_custom_cnn + w_resnet * probs_resnet + w_vit * probs_vit
+
+        _, preds = torch.max(probs_ensemble, 1)
+```
+
+The ensemble model combines the strengths of each individual model to improve overall performance and robustness. By averaging the predictions of multiple models, the ensemble model can reduce the impact of individual model weaknesses and provide more reliable predictions. As the ViT model achieved the highest performance on the test set, it is assigned the highest weight in the ensemble (0.5), while the custom CNN and ResNet models are assigned equal weights (0.25).
 
 # Training Optimization Strategies
 
@@ -259,12 +331,19 @@ The accuracy (@eq-accuracy) provides a simple and intuitive measure of performan
 
 ## Quantitative Results
 
-The best results for each model are presented below:
+The final results for each model are presented below:
 
-- **Guessing Baseline:** The guessing baseline achieved an F1-score of *0.14105* on the test set.
-- **Custom CNN:** The custom CNN achieved an F1-score of *0.92695* on the test set.
-- **Pre-trained CNN:** The pre-trained CNN achieved an F1-score of *0.96095* on the test set.
-- **Third Approach**: TODO
+| Model                   | Train Loss | Val Loss   | Val Accuracy (%) | Test F1-Score | Epochs |
+|-------------------------|------------|------------|--------------|---------------| -----------|
+| Guessing Baseline       | -          | -          | -            | 0.14105       | -          |
+| Custom CNN              | 0.2897     | 0.3034     | 90.42        | 0.92695       | 64         |
+| Pre-trained CNN         | **0.0532** | **0.1467** | **95.37**    | 0.96095       | 30         |
+| Pre-trained ViT         | 0.1438     | 0.2089     | 93.79        | 0.96725       | 29         |
+| Ensemble Model          | -          | -          | -            | **0.97103**   | -          |
+
+: Results of the different models on the validation and test set. The best performance for each metric is highlighted in bold. {#tbl-results}
+
+@tbl-results shows the performance of each model on the validation and the test set. The *custom CNN* achieved a validation accuracy of *90.42%* and a test F1-score of *0.92695*. The *pre-trained CNN* (ResNet-18) outperformed the custom CNN with a validation accuracy of *95.37%* and a test F1-score of *0.96095*. The *pre-trained ViT* achieved a validation accuracy of *93.79%* and a test F1-score of *0.96725*. The ensemble model, which combines the predictions of all three models, achieved the highest test F1-score of *0.97103*.
 
 ## Qualitative Results
 
