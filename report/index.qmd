@@ -37,7 +37,7 @@ execute:
   include: true
 
 abstract: |
-  This paper explores the Plant Seedlings Classification dataset, which consists of images representing *12* plant species. Several deep learning approaches are presented, including a custom CNN trained from scratch, a pre-trained CNN (ResNet-18) and a pre-trained VisionTransformer tuned for this classification task. To mitigate the challenges of data scarcity and class imbalance, extensive data augmentation techniques such as random rotations, flips and color jittering are employed. Results show that transfer learning with ResNet-18 outperforms the custom model, achieving a mean F1 score (micro-averaged) of 0.96095 on the test set. The custom CNN, while slightly less accurate, still achieves a competitive F1 score of 0.92695, demonstrating that even smaller locally trained architectures can be viable if carefully designed and thoroughly regularized. Finally, potential solutions are outlined, including model ensembling, deeper architectures, synthetic augmentation and interpretability measures, to further improve seedling classification performance.
+  This paper explores a Plant Seedlings Classification dataset consisting of multiple images representing *12* different plant species. Several deep learning approaches are presented, including a custom CNN trained from scratch, a pre-trained CNN (ResNet-18) and a pre-trained vision transformer (vit-base-patch16-224) tuned for this classification task. To address the challenges of data scarcity and class imbalance, extensive data augmentation techniques such as random rotations, flips and color jittering are employed. Results show that transfer learning with ResNet-18 outperforms the custom model, achieving a mean F1-score (micro-averaged) of *0.96095* on the test set. The custom CNN, while slightly less accurate, still achieves a competitive F1-score of *0.92695*, demonstrating that even smaller locally trained architectures can be viable if carefully designed and thoroughly regularized. While the vision transformer model achieves a high F1-score of *0.96725*, an ensemble combining the predictions of all three models achieves the highest F1-score of *0.97103*. Finally, potential solutions are outlined, including deeper architectures, synthetic augmentation and interpretability measures, to further improve seedling classification performance.
 ---
 
 # Introduction & Problem Understanding
@@ -46,7 +46,7 @@ abstract: |
 
 The "Plant Seedlings Classification" challenge, hosted on Kaggle [@plant-seedlings-classification], presents a real-world problem central to modern agriculture: accurately identifying the species of young seedlings from digital images.
 
-The dataset described in the paper "A Public Image Database for Benchmark of Plant Seedling Classification Algorithms" [@DBLP:journals/corr/abs-1711-05458] contains images of approximately *960* unique plants, representing *12* different species. Each image captures a seedling at different growth stages and under different conditions, reflecting the complexities found in real-world agricultural environments. These conditions include differences in lighting, background soil patterns and subtle phenotypic variations that can blur the lines between certain species. The evaluation metric of the competition is a mean F-score (micro-averaged F1-score), which encourages balanced performance across classes [@plant-seedlings-classification-evaluation]:
+The dataset described in the paper "A Public Image Database for Benchmark of Plant Seedling Classification Algorithms" [@DBLP:journals/corr/abs-1711-05458] contains images of approximately *960* unique plants, representing *12* different species. Each image captures a seedling at different growth stages and under different conditions, reflecting the complexities found in real-world agricultural environments. These conditions include differences in lighting, background soil patterns and subtle phenotypic variations that can blur the lines between certain species. The evaluation metric of the competition is a mean (micro-averaged) F1-score, which encourages balanced performance across classes [@plant-seedlings-classification-evaluation]:
 
 $$
 \text{Precision}_{\text{micro}} = \frac{\sum_{k \in C} TP_k}{\sum_{k \in C} TP_k + FP_k}
@@ -60,14 +60,14 @@ $$
 F1_{\text{micro}} = \frac{2 \cdot \text{Precision}_{\text{micro}} \cdot \text{Recall}_{\text{micro}}}{\text{Precision}_{\text{micro}} + \text{Recall}_{\text{micro}}}
 $$ {#eq-fscore}
 
-where $TP_i$, $FP_i$ and $FN_i$ are the true positive, false positive and false negative counts for class $i$, respectively and $C$ is the set of all classes. The mean F-score (@eq-fscore) is a balanced measure that considers both precision (@eq-precision) and recall (@eq-recall) across all classes, making it a suitable evaluation metric for multi-class classification tasks.
+where $TP_i$, $FP_i$ and $FN_i$ are the true positive, false positive and false negative counts for class $i$, respectively and $C$ is the set of all classes. The mean F1-score (@eq-fscore) is a balanced measure that considers both precision (@eq-precision) and recall (@eq-recall) across all classes, making it a suitable evaluation metric for multi-class classification tasks.
 
 ## Problem Definition and Objectives
 
 The core objective of the challenge is to build an automated classification model that can take a seedling image as input and accurately predict its species. The following points summarize the task:
 
 - **Input:** Set of 794 images of plant seedlings.
-- **Output:** Classification label for each image, indicating the species of the plant seedling.
+- **Output:** Classification label for each image, indicating the species of each plant seedling.
 - **Goal:** High classification performance as measured by the @eq-fscore.
 
 ## Dataset Overview
@@ -76,7 +76,7 @@ For a better understanding of the dataset, a brief overview of the class distrib
 
 ![Class Distribution](resources/class_distribution.png){#fig-class-distribution}
 
-@fig-class-distribution shows the distribution of classes in the dataset, with each bar representing the number of images per class. The dataset is imbalanced, with some classes having significantly fewer samples than others. This imbalance can pose a challenge for model training, as the model may struggle to learn the features of underrepresented classes effectively. The most common classes are "Loose Silky-bent" and "Common Chickweed", while the least common classes are "Common wheat" and "Maize".
+@fig-class-distribution shows the distribution of classes in the train dataset, with each bar representing the number of images per class. The dataset is imbalanced, with some classes having significantly fewer samples than others. This imbalance can pose a challenge for model training, as the model may struggle to learn the features of underrepresented classes effectively. The most common classes are "Loose Silky-bent" (654) and "Common Chickweed" (611), while the least common classes are "Common wheat" and "Maize" (both 221).
 
 ![Sample Images](resources/sample_images.png){#fig-sample-images}
 
@@ -89,13 +89,13 @@ Developing robust classification models for this task is not trivial. There are 
 1. **Visual Similarity Among Species:** Certain seedlings can look strikingly similar, making it difficult for both humans and machines to distinguish between them.
 2. **Intra-Class Variability:** Even within a single species, seedlings can vary significantly in appearance due to differences in growth stage, lighting and background. This variability challenges models to learn consistent features that generalize well.
 3. **Data Limitations:** With approximately 960 unique plants, the dataset could be considered modest for training deep learning models from scratch. While data augmentation can help to some extent, the relatively small dataset may still limit the complexity of models that can be effectively trained without overfitting.
-4. **Model Architecture Complexity:** Choosing the right model architecture, whether a custom CNN trained from scratch or a pre-trained deep CNN, to learn complex visual features. Deeper models can capture more nuanced differences, but they can also be harder to train and require careful regularization to prevent overfitting.
+4. **Model Architecture Complexity:** Choosing the right model architecture, whether a custom CNN trained from scratch or a pre-trained deep CNN or Vision Transformer (ViT), to learn complex visual features. Deeper models can capture more nuanced differences, but they can also be harder to train and require careful regularization to prevent overfitting.
 
 By clearly understanding these challenges and the broader context, model architectures can be proposed that address these difficulties. The following chapters discuss the strategies for model design, training optimization and thorough evaluation, ultimately leading to the approach that best addresses the core challenge of differentiating between plant seedling species.
 
 # Model Architecture Design
 
-To ensure deterministic results and reproducibility, the random seed *42* is set at the beginning of each script:
+To achieve deterministic results and reproducibility, the random seed *42* is set at the beginning of each script. This ensures that the same random initialization is used for each run, leading to consistent results across different experiments:
 
 ```python
 RANDOM_SEED = 42
@@ -109,6 +109,8 @@ torch.cuda.manual_seed_all(RANDOM_SEED)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 ```
+
+The random seed is set for the Python, NumPy and PyTorch random number generator. Additionally, the CuDNN backend is set to deterministic mode to ensure that the results are reproducible on the GPU.
 
 ## Guessing Baseline
 
@@ -124,13 +126,32 @@ file,species
 ...
 ```
 
+In this case, all *794* test samples are assigned the class label "Loose Silky-bent", which is the most frequent class in the training dataset. The F1-score of this baseline is *0.14105*.
+
 ## Custom CNN
 
 The custom CNN architecture is designed to capture features relevant to seedling classification, while being lightweight enough to be effectively trained locally on the given dataset. The model consists of a series of convolutional and pooling layers followed by fully connected layers to learn hierarchical features and make class predictions.
 
 ![Custom CNN Architecture](resources/custom_cnn/architecture.png){#fig-custom-cnn-architecture}
 
-@fig-custom-cnn-architecture shows the described architecture.
+As shown in @fig-custom-cnn-architecture, the network begins with a series of convolutional layers, with the number of filters gradually increasing from 16 to 256. These convolutional layers, each followed by a Rectified Linear Unit (ReLU) activation, extract spatial features such as edges, textures and patterns from the images. To reduce spatial dimensions and computational complexity, max-pooling layers are applied after each convolutional block to focus on the most salient features.
+
+After the convolutional and pooling stages, the feature maps are flattened into a 1D vector that serves as the input to the fully connected layers. The first fully connected layer has 128 units and captures high-level abstract features, while the final fully connected layer maps these features to the 12 target classes, producing the class probabilities.
+
+```plaintext
+================================================================
+Total params: 1,999,916
+Trainable params: 1,999,916
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.57
+Forward/backward pass size (MB): 26.70
+Params size (MB): 7.63
+Estimated Total Size (MB): 34.91
+----------------------------------------------------------------
+```
+
+The final custom CNN model has approximately *2 million* parameters, making it lightweight and computationally efficient. The model architecture is designed to capture relevant features for seedling classification while being suitable for training on a moderate-sized dataset.
 
 ## Pre-trained CNN
 
@@ -149,7 +170,24 @@ model.fc = Linear(
 )
 ```
 
-## Pre-trained Vision Transformer (ViT)
+The ResNet-18 model is pre-trained on the ImageNet dataset [@5206848ImageNet] and has shown strong performance on a variety of computer vision tasks. By using a pre-trained model, the network can leverage the learned features from ImageNet to improve performance on the plant seedlings dataset. The final classification layer is replaced to adapt the model to the specific classification task.
+
+```plaintext
+================================================================
+Total params: 11,182,668
+Trainable params: 11,182,668  
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.57
+Forward/backward pass size (MB): 62.79
+Params size (MB): 42.66
+Estimated Total Size (MB): 106.02
+----------------------------------------------------------------
+```
+
+This pre-trained CNN model has approximately *11 million* parameters, making it more complex than the custom CNN. However, the pre-trained weights allow the model to learn more robust features and hopefully achieve better performance on the plant seedlings dataset.
+
+## Pre-trained ViT
 
 Another approach is to use a ViT [@DBLP:journals/corr/abs-2010-11929] as the backbone architecture. The ViT model is pre-trained on a large-scale dataset and then fine-tuned on the plant seedlings dataset. The final classification head is replaced with a new linear layer to predict the 12 plant seedling classes:
 
@@ -168,7 +206,7 @@ model.head = torch.nn.Linear(
 )
 ```
 
-Instead of fine-tuning the entire model, the pre-trained weights of the `vit_base_patch16_224` model [@Wightman_PyTorch_Image_Models] are frozen, and only the classification head is trained on the plant seedlings dataset. This approach leverages the powerful feature extraction capabilities of the pre-trained model while adapting the final layer to the specific classification task. Furthermore the computational cost is reduced compared to training the entire model from scratch.
+Instead of fine-tuning the entire model, the pre-trained weights of the `vit_base_patch16_224` model [@Wightman_PyTorch_Image_Models] are frozen, and only the classification head is trained on the plant seedlings dataset. This approach leverages the powerful feature extraction capabilities of the pre-trained model while adapting the final layer to the specific classification task. Furthermore the computational cost is reduced compared to training the entire model from scratch or fine-tuning all layers:
 
 ```python
 for param in model.parameters():
@@ -178,9 +216,24 @@ for param in model.head.parameters():
     param.requires_grad = True
 ```
 
-## Ensemble Model
+```plaintext
+================================================================
+Total params: 85,655,820
+Trainable params: 9,228
+Non-trainable params: 85,646,592
+----------------------------------------------------------------
+Input size (MB): 0.57
+Forward/backward pass size (MB): 479.03
+Params size (MB): 326.75
+Estimated Total Size (MB): 806.35
+----------------------------------------------------------------
+```
 
-A final ensemble model is created by combining the predictions of all three models (custom CNN, pre-trained CNN, pre-trained ViT) using a simple weighted average. The weights are determined based on the performance of each model on the test set:
+The ViT model has approximately *85 million* parameters, but only *9,228* of them are trainable. This makes the model computationally efficient while still benefiting from the powerful feature extraction capabilities of the pre-trained ViT model.
+
+## Ensemble
+
+A final ensemble is created by combining the predictions of all three models (custom CNN, pre-trained CNN, pre-trained ViT) using a simple weighted average. The weights are determined based on the performance of each model on the test set:
 
 ```python
 import torch.nn.functional as F
@@ -206,13 +259,13 @@ with torch.no_grad():
         _, preds = torch.max(probs_ensemble, 1)
 ```
 
-The ensemble model combines the strengths of each individual model to improve overall performance and robustness. By averaging the predictions of multiple models, the ensemble model can reduce the impact of individual model weaknesses and provide more reliable predictions. As the ViT model achieved the highest performance on the test set, it is assigned the highest weight in the ensemble (0.5), while the custom CNN and ResNet models are assigned equal weights (0.25).
+The ensemble combines the strengths of each individual model to improve overall performance and robustness. By averaging the predictions of multiple models, the ensemble can reduce the impact of individual model weaknesses and provide more reliable predictions. As the ViT model achieved the highest performance on the test set, it is assigned the highest weight in the ensemble (0.5), while the custom CNN and ResNet models are assigned equal weights (both 0.25).
 
 # Training Optimization Strategies
 
-## Training Algorithms & Optimizers
+## Training Algorithms & Optimizers {#sec-training-optimization}
 
-All models were trained using the Adam optimizer [@kingma2017adammethodstochasticoptimization] with a learning rate of *0.001*. The Adam optimizer is a popular choice for training deep neural networks due to its adaptive learning rate mechanism and momentum-based updates. A weight decay of *1e-4* was applied to regularize the model and prevent overfitting.
+All models were trained using the Adam optimizer [@kingma2017adammethodstochasticoptimization] with a learning rate of *0.001*. The Adam optimizer is a popular choice for training deep neural networks due to its adaptive learning rate mechanism and momentum-based updates. A weight decay of *1e-4* was applied to regularize the model and prevent overfitting:
 
 ```python
 from torch.optim import Adam
@@ -225,7 +278,7 @@ optimizer = Adam(model.parameters(),
 
 ## Learning Rate Schedules
 
-To adjust the learning rate during training, a learning rate scheduler was used to reduce the learning rate by a factor of *0.5* if the validation loss did not improve for *2* epochs. This technique helps the model converge more effectively by gradually reducing the learning rate as it approaches a local minimum.
+To adjust the learning rate during training, a learning rate scheduler was used to reduce the learning rate by a factor of *0.5* if the validation loss did not improve for *2* epochs. This technique helps the model converge more effectively by gradually reducing the learning rate as it approaches a local minimum:
 
 ```python
 from torch.optim.lr_scheduler import ReduceLROnPlateau
@@ -242,9 +295,8 @@ scheduler = ReduceLROnPlateau(
 
 To prevent overfitting and improve generalization, several regularization techniques were applied during training:
 
-- **Weight Decay:** L2 regularization with a weight decay of *1e-4* was applied to the optimizer to penalize large weights and prevent overfitting.
-- **Dropout:** A dropout layer with a dropout probability of *0.5* was added after the fully connected layer to regularize the model and prevent co-adaptation of neurons.
-- **Data Augmentation:** Various data augmentation techniques such as random rotations, flips and color jittering were applied to the training images to increase the diversity of the training set and improve the robustness of the model.
+- **Weight Decay:** L2 regularization with a weight decay of *1e-4* was applied to the optimizer to penalize large weights. (see [@sec-training-optimization])
+- **Dropout:** A dropout layer with a dropout probability of *0.5* was added after the fully connected layer to regularize the model and prevent co-adaptation of neurons:
 
 ```python
 from torch.nn import Dropout
@@ -253,6 +305,8 @@ self.droupout = Dropout(p=0.5)
 
 x = self.dropout(x)
 ```
+
+- **Data Augmentation:** Various data augmentation techniques such as random rotations, flips and color jittering were applied to the training images to increase the diversity of the training set and improve the robustness of the model:
 
 ```python
 from torchvision import transforms
@@ -315,7 +369,21 @@ This split results in a training set of *3800* and a validation set of *950* sam
 
 ![Training and Validation Set Sizes](resources/train_vald_split.png){#fig-train-vald-split}
 
-Since there are no labels for the test set, the validation set serves as a proxy to evaluate the performance of the model on unseen data. Validation loss and accuracy were monitored during training to assess the model's convergence and generalization capabilities.
+Since there are no labels for the test set, the validation set serves as a proxy to evaluate the performance of the model on unseen data. Validation loss and accuracy were monitored during training to assess the convergence and generalization capabilities of the models:
+
+![Training and Validation Loss (custom CNN)](resources/custom_cnn/loss.png){#fig-loss-custom-cnn}
+
+![Training and Validation Loss (pre-trained CNN)](resources/resnet/loss.png){#fig-loss-pretrained-cnn}
+
+![Training and Validation Loss (pre-trained ViT)](resources/vit/loss.png){#fig-loss-pretrained-vit}
+
+@fig-loss-custom-cnn, @fig-loss-pretrained-cnn and @fig-loss-pretrained-vit show the training and validation loss curves for the custom CNN, pre-trained CNN and pre-trained ViT models, respectively. Each curve illustrates the learning dynamics of the model over successive epochs.
+
+The custom CNN demonstrates a gradual reduction in both training and validation loss, converging steadily around epoch *60*. This indicates effective learning without significant overfitting, as the training and validation loss curves remain closely aligned. One could argue that the model could benefit from increased complexity and further training to improve performance.
+
+The pre-trained CNN shows faster convergence, with training and validation loss stabilizing around epoch *25*. This faster convergence reflects the advantages of transfer learning, as the model uses pre-trained weights for feature extraction. Similarly, the pre-trained ViT, which also converges rapidly within *25* epochs, demonstrates the effectiveness of using pre-trained models for this classification task. However the gap between training and validation loss suggests that the model could benefit from additional regularization or fine-tuning to improve generalization. In particular, the pre-trained CNN begins to clearly overfit the data after epoch *30*.
+
+The inclusion of a checkpoint in each figure highlights the point at which the model achieved the lowest validation loss, signaling optimal performance and serving as a reference for saving the best model state. The loaded checkpoints are at epoch *60*, *26* and *25* for the custom CNN, pre-trained CNN and pre-trained ViT, respectively.
 
 ## Performance Metrics
 
@@ -327,51 +395,112 @@ $$ {#eq-accuracy}
 
 The accuracy (@eq-accuracy) provides a simple and intuitive measure of performance on the validation set.
 
+![Validation Accuracy (custom CNN)](resources/custom_cnn/accuracy.png){#fig-accuracy-custom-cnn}
+
+![Validation Accuracy (pre-trained CNN)](resources/resnet/accuracy.png){#fig-accuracy-pretrained-cnn}
+
+![Validation Accuracy (pre-trained ViT)](resources/vit/accuracy.png){#fig-accuracy-pretrained-vit}
+
+Similar to the loss curves, @fig-accuracy-custom-cnn, @fig-accuracy-pretrained-cnn and @fig-accuracy-pretrained-vit show the validation accuracy of the custom CNN, pre-trained CNN and pre-trained ViT models, respectively. The accuracy curves provide insight into the ability of the model to correctly classify the validation samples over successive epochs. The figures highlight the information from the loss curves, showing that the pre-trained models converge faster and achieve higher accuracy compared to the custom CNN. But again, the custom CNN shows a steady and smooth increase in accuracy over time, indicating that the model continues to learn and improve its performance. The selected checkpoints are the same as for the loss curves, indicating the load state of the model with the lowest validation loss, which also corresponds to high accuracy.
+
 # Results & Analysis
 
 ## Quantitative Results
 
 The final results for each model are presented below:
 
-| Model                   | Train Loss | Val Loss   | Val Accuracy (%) | Test F1-Score | Epochs |
+| Model                   | Train Loss | Val Loss   | Val Accuracy | Test F1-Score | Epochs |
 |-------------------------|------------|------------|--------------|---------------| -----------|
 | Guessing Baseline       | -          | -          | -            | 0.14105       | -          |
-| Custom CNN              | 0.2897     | 0.3034     | 90.42        | 0.92695       | 64         |
-| Pre-trained CNN         | **0.0532** | **0.1467** | **95.37**    | 0.96095       | 30         |
-| Pre-trained ViT         | 0.1438     | 0.2089     | 93.79        | 0.96725       | 29         |
-| Ensemble Model          | -          | -          | -            | **0.97103**   | -          |
+| Custom CNN              | 0.2897     | 0.3034     | 0.9042       | 0.92695       | 64         |
+| Pre-trained CNN         | **0.0532** | **0.1467** | **0.9537**   | 0.96095       | 30         |
+| Pre-trained ViT         | 0.1438     | 0.2089     | 0.9379       | 0.96725       | 29         |
+| **Ensemble**            | -          | -          | -            | **0.97103**   | -          |
 
-: Results of the different models on the validation and test set. The best performance for each metric is highlighted in bold. {#tbl-results}
+: Quantitative results of the models on the train, validation and test set. {#tbl-results}
 
-@tbl-results shows the performance of each model on the validation and the test set. The *custom CNN* achieved a validation accuracy of *90.42%* and a test F1-score of *0.92695*. The *pre-trained CNN* (ResNet-18) outperformed the custom CNN with a validation accuracy of *95.37%* and a test F1-score of *0.96095*. The *pre-trained ViT* achieved a validation accuracy of *93.79%* and a test F1-score of *0.96725*. The ensemble model, which combines the predictions of all three models, achieved the highest test F1-score of *0.97103*.
+@tbl-results shows the performance of each model on the validation and the test set. The *custom CNN* achieved a validation accuracy of *90.42%* and a test F1-score of *0.92695*. The *pre-trained CNN* (ResNet-18) outperformed the custom CNN with a validation accuracy of *95.37%* and a test F1-score of *0.96095*. The *pre-trained ViT* achieved a validation accuracy of *93.79%* and a test F1-score of *0.96725*. The *ensemble*, which combines the predictions of all three models, achieved the highest test F1-score of *0.97103*. Since the *guessing baseline* and the *ensemble* are not trained models, the training and validation losses are not applicable.
 
 ## Qualitative Results
 
-Since the labels for the test set are not available, the qualitative results are based on the validation set.
+Since the labels for the test set are not available, the qualitative results are based on the validation set to get an idea of the performance of the models. The confusion matrices of the custom CNN, pre-trained CNN and pre-trained ViT models on the validation set are shown below:
 
-![Confusion Matrix (Custom CNN)](resources/custom_cnn/confusion.png){#fig-confusion-matrix-custom-cnn}
+![Confusion Matrix (custom CNN)](resources/custom_cnn/confusion.png){#fig-confusion-matrix-custom-cnn}
 
 @fig-confusion-matrix-custom-cnn shows the confusion matrix of the custom CNN on the validation set. The rows represent the true classes, while the columns represent the predicted classes. The diagonal elements represent the number of correct predictions for each class, while the off-diagonal elements represent the misclassifications. While there are some misclassifications without a clear pattern, the model clearly struggles to distinguish between "Loose Silky-bent" and "Black-grass".
 
-![Confusion Matrix (Pre-trained CNN)](resources/resnet/confusion.png){#fig-confusion-matrix-pretrained-cnn}
+![Confusion Matrix (pre-trained CNN)](resources/resnet/confusion.png){#fig-confusion-matrix-pretrained-cnn}
 
 Similar to the custom CNN, @fig-confusion-matrix-pretrained-cnn shows the confusion matrix of the pre-trained CNN on the validation set. The model shows the same difficulty in distinguishing between "Loose Silky-bent" and "Black-grass".
 
+![Confusion Matrix (pre-trained ViT)](resources/vit/confusion.png){#fig-confusion-matrix-pretrained-vit}
+
+Although the pre-trained ViT model takes a different approach, @fig-confusion-matrix-pretrained-vit shows that it also struggles with the same pair of classes "Loose Silky-bent" and "Black-grass".
+
 ## Comparative Analysis
+
+The results show that the ensemble model outperforms the individual models, achieving the highest test F1-score of *0.97103*. The pre-trained ViT model achieved the highest individual test F1-score of *0.96725*, followed by the pre-trained CNN with a test F1-score of *0.96095*. The custom CNN achieved a test F1-score of *0.92695*, demonstrating competitive performance despite being trained from scratch.
+
+Since real-time inference is not required for this task, the computational cost of the models is not a primary concern. However, the custom CNN is the lightest model with approximately *2 million* parameters, making it computationally efficient. The pre-trained CNN has approximately *11 million* parameters, while the pre-trained ViT has approximately *85 million* parameters, making it the most computationally expensive model.
+
+## Interpretability Measures
+
+The Pytorch-Grad-CAM library [@jacobgilpytorchcam] by Jacob Gildenblat was used to generate class activation maps (CAMs) for the custom CNN, pre-trained CNN and pre-trained ViT models. CAMs provide insight into the regions of the image that the model focuses on when making predictions and can help explain the decision-making process of the model. The library was installed with the following command:
+
+```bash
+pip install grad-cam
+```
+
+The simplified code snippet below shows how to generate CAMs for a given image using the custom CNN model:
+
+```python
+from pytorch_grad_cam import GradCAM
+from pytorch_grad_cam.utils.image import show_cam_on_image
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+
+with GradCAM(
+      model=model,
+      target_layers=target_layers,
+     ) as cam:
+    grayscale_cam = cam(
+                        input_tensor=image.unsqueeze(0),
+                        targets=targets,
+                    )
+    grayscale_cam = grayscale_cam[0, :]
+    visualization = show_cam_on_image(
+                        rgb_img,
+                        grayscale_cam,
+                        use_rgb=True,
+                    )
+```
+
+The following figures show Grad-CAM visualizations for the last two layers of the custom CNN, pre-trained CNN and pre-trained ViT models:
+
+![Grad-CAM (custom CNN)](resources/custom_cnn/grad_cam.png){#fig-grad-cam-custom-cnn}
+
+![Grad-CAM (pre-trained CNN)](resources/resnet/grad_cam.png){#fig-grad-cam-pretrained-cnn}
+
+![Grad-CAM (pre-trained ViT)](resources/vit/grad_cam.png){#fig-grad-cam-pretrained-vit}
+
+The @fig-grad-cam-custom-cnn, @fig-grad-cam-pretrained-cnn and @fig-grad-cam-pretrained-vit show the Grad-CAM visualizations for the custom CNN, pre-trained CNN and pre-trained ViT models. The visualizations highlight the regions of the image that the model focuses on when making predictions. The Grad-CAM visualizations provide insight into the decision-making process of the models and help to interpret their predictions.
+
+For some classes, such as "Small-flowered Cranesbill", "Fat Hen", "Common Chickweed", "Cleavers" and "Maize", the custom CNN clearly focuses on parts of the plants that a human would use to distinguish between the classes. For these species, the focus is on the leaves. For classes like "Black-grass", "Common wheat", "Sugar beet", "Scentsless Mayweed" and "Loose Silky-bent" the CNN focuses on what appears to be the soil or the background. One could argue that the model has difficulty distiguishing between the plants and the background and focuses on *noise* in the images.
+
+In comparison, both pre-trained architectures, the CNN and the ViT, focus more on the plants themselves. But even for "Black grass", "Scentsless Mayweed" and "Loose Silky-bent" the models do not seem to focus on the plants alone. The visualizations of the areas of interest are smoother for the CNN compared to the ViT, which looks more *blocky*. This is due to the different architectures and the way the models process the images as the ViT divides the image into patches and processes them separately, therefore the patches are more visible in the Grad-CAM visualizations for the ViT. For a human observer the Grad-CAM visualizations can help understand how the models make their predictions and what features they focus on, the custom CNN seems to produce the most resonable visualizations and focus on understandable features.
 
 # Conclusion & Lessons Learned
 
 ## Key Takeaways
 
-In this project, several strategies were explored to classify plant seedlings into 12 different species, with the overall goal of achieving robust performance as measured by the mean F1-score (micro-averaged). Data augmentation played a central role in mitigating overfitting and improving model performance. Techniques such as random rotations, flips and color jittering effectively increased the diversity of training samples, thereby improving the robustness of the learned feature representations. Meanwhile, the choice of an appropriate model architecture proved critical. A custom CNN designed and trained from scratch achieved competitive results (F1-score of 0.92695), demonstrating the potential for custom solutions even with relatively modest dataset sizes. However, the use of a pre-trained network, specifically ResNet-18, demonstrated how transfer learning can deliver superior results (F1-score of 0.96095) by building on rich feature embeddings learned from large-scale datasets. Proper validation underpinned these successes, with a stratified split ensuring balanced class distributions in both the training and validation sets. This practice not only prevented the model from overfitting to majority classes, but also enabled the careful monitoring of loss and accuracy metrics to guide training decisions.
+In this project, several strategies were explored to classify plant seedlings into 12 different species, with the overall goal of achieving robust performance as measured by the mean (micro-averaged) F1-score. Data augmentation played a central role in preventing overfitting and improving model performance. Techniques such as random rotations, flips and color jittering effectively increased the diversity of the training samples, thereby improving the robustness of the learned feature representations. Meanwhile, the choice of an appropriate model architecture proved critical. A custom CNN designed and trained from scratch achieved competitive results (F1-score of 0.92695), demonstrating the potential for custom solutions even with relatively modest dataset sizes. However, the use of pre-trained networks, such as ResNet-18 and vit-base-patch16-224, demonstrated how transfer learning can deliver superior results (F1-scores of 0.96095 and 0.96725) by building on rich feature embeddings learned from large-scale datasets. Proper validation underpinned these successes, with a stratified split ensuring balanced class distributions in both the training and validation sets. This practice not only prevented the model from overfitting to majority classes, but also allowed careful monitoring of loss and accuracy metrics to guide training decisions and allowed early stopping to load the best model state before overfitting occurred.
 
 ## Challenges Encountered
 
-Despite the encouraging results, several challenges remained throughout the process. The class imbalance present in the dataset contributed to occasional misclassifications, underscoring the need for robust strategies to deal with skewed data. In addition, certain class pairs, such as "Loose Silky-bent" and "Black-grass", exhibited high visual similarity, leading to consistent confusion for both the custom and pre-trained CNNs. Overfitting remained a significant risk due to the limited dataset size, necessitating the use of multiple regularization methods including weight decay, dropout layers and data augmentation to ensure generalization. Computational constraints also played a role in decisions regarding batch size, image resolution and the complexity of architectures that could feasibly be trained within the available resources.
+Despite the encouraging results, several challenges remained throughout the process. The class imbalance present in the dataset contributed to occasional misclassifications, underscoring the need for robust strategies to deal with skewed data. In addition, certain class pairs, such as "Loose Silky-bent" and "Black-grass", exhibited high visual similarity, leading to consistent confusion for both the custom and pre-trained models. Overfitting remained a significant risk due to the limited dataset size, necessitating the use of multiple regularization methods including weight decay, dropout layers and data augmentation to ensure generalization. Computational constraints also played a role in decisions regarding batch size, image resolution and the complexity of architectures that could be feasibly trained within the available resources (e.g., freezing layers in the ViT model to reduce trainable parameters). Finally, the lack of labeled test data made it difficult to comprehensively evaluate the models, necessitating the use of the validation set as a proxy for performance on unseen data.
 
 ## Future Work
 
-Going forward, there are several opportunities to refine and extend the current results. Model ensembling, where predictions from different architectures or random initialization seeds are combined, could further improve classification accuracy by exploiting a variety of learned representations. Exploring deeper pre-trained networks such as ResNet-50, DenseNet, or EfficientNet could push the performance envelope, although careful management of overfitting will be important. Collecting additional labeled data, perhaps through targeted field sampling, would alleviate some of the constraints of class imbalance, while generative methods-such as GANs-could produce synthetic examples to strengthen underrepresented classes.
+Going forward, there are several ways to refine and extend the current results. Adding more models to the ensemble or training the ensemble on the validation set to find the optimal weights for each model. Exploring deeper pre-trained networks such as ResNet-50, DenseNet, or EfficientNet could improve performance, although careful management of overfitting will be important. Collecting additional labeled data or generating synthetic samples using generative adversarial networks (GANs) could help address the class imbalance and improve the ability of the model to generalize to underrepresented classes.
 
 # References
 
