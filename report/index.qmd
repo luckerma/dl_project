@@ -9,6 +9,7 @@ authors:
         city: "Cologne"
         country: "Germany"
     corresponding: true
+    email: "luca_simon.uckermann@smail.th-koeln.de"
     orcid: "0009-0005-2957-6331"
   - name: "Nikethan Nimalakumaran"
     affiliation:
@@ -16,19 +17,21 @@ authors:
         name: "Université Gustave Eiffel"
         city: "Champs-sur-Marne"
         country: "France"
+    corresponding: true
   - name: "Jonas Möller"
     affiliation:
       - id: UBIE
         name: "Bielefeld University"
         city: "Bielefeld"
         country: "Germany"
+    corresponding: true
 
 bibliography: references.bib
 date: last-modified
 number-sections: true
 link-citations: true
 notebook-links: false
-execute: 
+execute:
   eval: true
   echo: true
   output: true
@@ -46,19 +49,21 @@ abstract: |
 
 The "Plant Seedlings Classification" challenge, hosted on Kaggle [@plant-seedlings-classification], presents a real-world problem central to modern agriculture: accurately identifying the species of young seedlings from digital images.
 
-The dataset described in the paper "A Public Image Database for Benchmark of Plant Seedling Classification Algorithms" [@DBLP:journals/corr/abs-1711-05458] contains images of approximately *960* unique plants, representing *12* different species. Each image captures a seedling at different growth stages and under different conditions, reflecting the complexities found in real-world agricultural environments. These conditions include differences in lighting, background soil patterns and subtle phenotypic variations that can blur the lines between certain species. The evaluation metric of the competition is a mean (micro-averaged) F1-score, which encourages balanced performance across classes [@plant-seedlings-classification-evaluation]:
+The dataset described in the paper "A Public Image Database for Benchmark of Plant Seedling Classification Algorithms" [@DBLP:journals/corr/abs-1711-05458] contains images of approximately _960_ unique plants, representing _12_ different species. Each image captures a seedling at different growth stages and under different conditions, reflecting the complexities found in real-world agricultural environments. These conditions include differences in lighting, background soil patterns and subtle phenotypic variations that can blur the lines between certain species. The evaluation metric of the competition is a mean (micro-averaged) F1-score, which encourages balanced performance across classes [@plant-seedlings-classification-evaluation]:
 
 $$
 \text{Precision}_{\text{micro}} = \frac{\sum_{k \in C} TP_k}{\sum_{k \in C} TP_k + FP_k}
-$$ {#eq-precision}
+$${#eq-precision}
+
 
 $$
-\text{Recall}_{\text{micro}} = \frac{\sum_{k \in C} TP_k}{\sum_{k \in C} TP_k + FN_k}
-$$ {#eq-recall}
+\text{Recall}_{\text{micro}} = \frac{\sum_{k \in C} TP*k}{\sum*{k \in C} TP_k + FN_k}
+$${#eq-recall}
+
 
 $$
-F1_{\text{micro}} = \frac{2 \cdot \text{Precision}_{\text{micro}} \cdot \text{Recall}_{\text{micro}}}{\text{Precision}_{\text{micro}} + \text{Recall}_{\text{micro}}}
-$$ {#eq-fscore}
+F1*{\text{micro}} = \frac{2 \cdot \text{Precision}*{\text{micro}} \cdot \text{Recall}_{\text{micro}}}{\text{Precision}_{\text{micro}} + \text{Recall}\_{\text{micro}}}
+$${#eq-fscore}
 
 where $TP_i$, $FP_i$ and $FN_i$ are the true positive, false positive and false negative counts for class $i$, respectively and $C$ is the set of all classes. The mean F1-score (@eq-fscore) is a balanced measure that considers both precision (@eq-precision) and recall (@eq-recall) across all classes, making it a suitable evaluation metric for multi-class classification tasks.
 
@@ -175,7 +180,7 @@ The ResNet-18 model is pre-trained on the ImageNet dataset [@5206848ImageNet] an
 ```plaintext
 ================================================================
 Total params: 11,182,668
-Trainable params: 11,182,668  
+Trainable params: 11,182,668
 Non-trainable params: 0
 ----------------------------------------------------------------
 Input size (MB): 0.57
@@ -391,7 +396,7 @@ In addition to losses, validation accuracy is tracked during training to monitor
 
 $$
 \text{Accuracy} = \frac{\text{Number of Correct Predictions}}{\text{Total Number of Samples}}
-$$ {#eq-accuracy}
+$${#eq-accuracy}
 
 The accuracy (@eq-accuracy) provides a simple and intuitive measure of performance on the validation set.
 
