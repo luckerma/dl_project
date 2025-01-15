@@ -280,13 +280,13 @@ window.Quarto = {
 <p><span id="eq-precision"><span class="math display">\[
 \text{Precision}_{\text{micro}} = \frac{\sum_{k \in C} TP_k}{\sum_{k \in C} TP_k + FP_k}
 \tag{1}\]</span></span></p>
-<p>$$</p>
-<p>_{} = </p>
-<p>$$ {#eq-recall}</p>
-<p>$$</p>
-<p>F1*{} = </p>
-<p>$$ {#eq-fscore}</p>
-<p>where <span class="math inline">\(TP_i\)</span>, <span class="math inline">\(FP_i\)</span> and <span class="math inline">\(FN_i\)</span> are the true positive, false positive and false negative counts for class <span class="math inline">\(i\)</span>, respectively and <span class="math inline">\(C\)</span> is the set of all classes. The mean F1-score (<strong>?@eq-fscore</strong>) is a balanced measure that considers both precision (<a href="#eq-precision" class="quarto-xref">Equation&nbsp;1</a>) and recall (<strong>?@eq-recall</strong>) across all classes, making it a suitable evaluation metric for multi-class classification tasks.</p>
+<p><span id="eq-recall"><span class="math display">\[
+\text{Recall}_{\text{micro}} = \frac{\sum_{k \in C} TP*k}{\sum*{k \in C} TP_k + FN_k}
+\tag{2}\]</span></span></p>
+<p><span id="eq-fscore"><span class="math display">\[
+F1*{\text{micro}} = \frac{2 \cdot \text{Precision}*{\text{micro}} \cdot \text{Recall}_{\text{micro}}}{\text{Precision}_{\text{micro}} + \text{Recall}\_{\text{micro}}}
+\tag{3}\]</span></span></p>
+<p>where <span class="math inline">\(TP_i\)</span>, <span class="math inline">\(FP_i\)</span> and <span class="math inline">\(FN_i\)</span> are the true positive, false positive and false negative counts for class <span class="math inline">\(i\)</span>, respectively and <span class="math inline">\(C\)</span> is the set of all classes. The mean F1-score (<a href="#eq-fscore" class="quarto-xref">Equation&nbsp;3</a>) is a balanced measure that considers both precision (<a href="#eq-precision" class="quarto-xref">Equation&nbsp;1</a>) and recall (<a href="#eq-recall" class="quarto-xref">Equation&nbsp;2</a>) across all classes, making it a suitable evaluation metric for multi-class classification tasks.</p>
 </section>
 <section id="problem-definition-and-objectives" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="problem-definition-and-objectives"><span class="header-section-number">1.2</span> Problem Definition and Objectives</h2>
@@ -294,7 +294,7 @@ window.Quarto = {
 <ul>
 <li><strong>Input:</strong> Set of 794 images of plant seedlings.</li>
 <li><strong>Output:</strong> Classification label for each image, indicating the species of each plant seedling.</li>
-<li><strong>Goal:</strong> High classification performance as measured by the <strong>?@eq-fscore</strong>.</li>
+<li><strong>Goal:</strong> High classification performance as measured by the <a href="#eq-fscore" class="quarto-xref">Equation&nbsp;3</a>.</li>
 </ul>
 </section>
 <section id="dataset-overview" class="level2" data-number="1.3">
@@ -614,10 +614,10 @@ Figure&nbsp;7: Training and Validation Loss (pre-trained ViT)
 <section id="performance-metrics" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="performance-metrics"><span class="header-section-number">4.2</span> Performance Metrics</h2>
 <p>In addition to losses, validation accuracy is tracked during training to monitor performance of the models. Accuracy is calculated as the ratio of correctly predicted samples to the total number of samples in the validation set:</p>
-<p>$$</p>
-<p> = </p>
-<p>$$ {#eq-accuracy}</p>
-<p>The accuracy (<strong>?@eq-accuracy</strong>) provides a simple and intuitive measure of performance on the validation set.</p>
+<p><span id="eq-accuracy"><span class="math display">\[
+\text{Accuracy} = \frac{\text{Number of Correct Predictions}}{\text{Total Number of Samples}}
+\tag{4}\]</span></span></p>
+<p>The accuracy (<a href="#eq-accuracy" class="quarto-xref">Equation&nbsp;4</a>) provides a simple and intuitive measure of performance on the validation set.</p>
 <div id="fig-accuracy-custom-cnn" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-accuracy-custom-cnn-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
