@@ -1,0 +1,84 @@
+\section{Training Optimization Strategies}
+
+\subsection{Training Algorithms and Optimizers}\label{subsec:training-algorithms-optimizers}
+
+All models were trained using the Adam optimizer \cite{kingma2017adammethodstochasticoptimization} with a learning rate of \textbf{0.001}. The Adam optimizer is a popular choice for training deep neural networks due to its adaptive learning rate mechanism and momentum-based updates. A weight decay of \textbf{1e-4} was applied to regularize the model and prevent overfitting:
+
+\begin{minipage}{0.9\linewidth}\begin{lstlisting}[caption={Adam optimizer with weight decay.},label={lst:adam-optimizer}]
+from torch.optim import Adam
+
+optimizer = Adam(
+    model.parameters(),
+    lr=1e-3,
+    weight_decay=1e-4,
+)
+\end{lstlisting}\end{minipage}
+
+\subsection{Learning Rate Schedules}
+
+To adjust the learning rate during training, a learning rate scheduler was used to reduce the learning rate by a factor of \textbf{0.5} if the validation loss did not improve for \textbf{2} epochs. This technique helps the model converge more effectively by gradually reducing the learning rate as it approaches a local minimum:
+
+\begin{minipage}{0.9\linewidth}\begin{lstlisting}[caption={ReduceLROnPlateau learning rate scheduler.},label={lst:lr-scheduler}]
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+
+scheduler = ReduceLROnPlateau(
+    optimizer,
+    mode="min",
+    factor=0.5,
+    patience=2,
+)
+\end{lstlisting}\end{minipage}
+
+\subsection{Regularization Techniques}
+
+To prevent overfitting and improve generalization, several regularization techniques were applied during training:
+
+\begin{itemize}
+    \item \textbf{Weight Decay:} L2 regularization with a weight decay of \textbf{1e-4} was applied to the optimizer to penalize large weights. (see~\ref{subsec:training-algorithms-optimizers})
+    \item \textbf{Dropout:} A dropout layer with a dropout probability of \textbf{0.5} was added after the fully connected layer to regularize the model and prevent co-adaptation of neurons:
+\end{itemize}
+
+\begin{minipage}{0.9\linewidth}\begin{lstlisting}[caption={Dropout layer with probability 0.5.},label={lst:dropout-layer}]
+from torch.nn import Dropout
+
+self.droupout = Dropout(p=0.5)
+
+x = self.dropout(x)
+\end{lstlisting}\end{minipage}
+
+\begin{itemize}
+    \item \textbf{Data Augmentation:} Various data augmentation techniques such as random rotations, flips and color jittering were applied to the training images to increase the diversity of the training set and improve the robustness of the model:
+\end{itemize}
+
+\begin{minipage}{0.9\linewidth}\begin{lstlisting}[caption={Data augmentation transforms.},label={lst:data-augmentation}]
+from torchvision import transforms
+
+transform = transforms.Compose(
+    [
+        transforms.Resize(
+            size=transform_resize
+        ),
+        transforms.RandomResizedCrop(
+            size=transform_resize,
+            scale=(0.8, 1.0),
+            ratio=(0.9, 1.1),
+        ),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomVerticalFlip(),
+        transforms.RandomRotation(
+            degrees=360
+        ),
+        transforms.ColorJitter(
+            brightness=0.1,
+            contrast=0.1,
+            saturation=0.1,
+            hue=0.1,
+        ),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=transform_mean,
+            std=transform_std,
+        ),
+    ]
+)
+\end{lstlisting}\end{minipage}

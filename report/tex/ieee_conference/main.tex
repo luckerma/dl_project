@@ -1,0 +1,51 @@
+\documentclass[conference,compsoc
+%,draft
+]{IEEEtran}
+%\IEEEoverridecommandlockouts
+
+\input{config/packages.tex}
+%\usepackage{refcheck}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08emT\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+    
+\begin{document}
+
+\title{Plant Seedlings Classification}
+
+\author{\IEEEauthorblockN{Luca Uckermann\orcidlink{0009-0005-2957-6331}}
+    \IEEEauthorblockA{\textit{Institute of Media and Imaging Technology}\\
+        \textit{TH Köln - University of Applied Sciences}\\
+        Cologne, Germany\\
+        luca.uckermann@th-koeln.de}
+    \iffalse
+        \and
+        \IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
+        \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+            \textit{name of organization (of Aff.)}\\
+            City, Country \\
+            email address or ORCID}
+    \fi
+}
+
+\maketitle
+
+\input{chapters/000-abstract.tex}
+
+\input{chapters/010-introduction.tex}
+\input{chapters/020-model_architecture.tex}
+\input{chapters/030-training_optimization.tex}
+\input{chapters/040-model_evaluation.tex}
+\input{chapters/050-results.tex}
+\input{chapters/060-conclusion.tex}
+
+%\nocite{*}
+{
+    \hypersetup{hidelinks}
+    \listoffigures
+    \listoftables
+    \lstlistoflistings
+}
+\bibliographystyle{resources/bib/IEEEtran}
+\bibliography{resources/bib/IEEEabrv,../../references}
+
+\end{document}
