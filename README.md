@@ -1,28 +1,7 @@
-# dl_project
+# DEEP-SEED
 
-Deep Learning - Plant Seedlings Classification
+## From Scratch to Ensemble -- A Deep Learning Approach to Seedling Classification
 
-Report available at:\
-https://luckerma.github.io/dl_project/
+### Report
 
-## Report (Quarto)
-
-### Preview Report (HTML)
-
-```bash
-quarto preview ./report/
-```
-
-### Render Report (PDF)
-
-```bash
-quarto render ./report/ --to pdf
-```
-
-### Render Report (IEEE PDF)
-
-```bash
-cd report/
-quarto add dfolio/quarto-ieee
-quarto render . --to ieee-pdf
-```
+https://luckerma.github.io/dl_project/main.pdf

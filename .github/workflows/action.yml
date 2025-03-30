@@ -1,4 +1,4 @@
-name: Publish Quarto Report
+name: Build and Deploy LaTeX Document
 
 on:
   push:
@@ -9,25 +9,39 @@ on:
 permissions:
   contents: write
   pages: write
+  id-token: write
 
 jobs:
-  publish-report:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
-      - name: Set up Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
-        with:
-          tinytex: true
+      - name: Build Latex PDF
+        run: |
+          sudo apt update
+          sudo apt install latexmk texlive-full
 
-      - name: Render and Publish
-        id: github-pages
-        uses: quarto-dev/quarto-actions/publish@v2.1.6
+          cd report/tex/ieee_conference/
+          latexmk -pdf ./main.tex
+          mv ./main.pdf ./output/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3.0.1
         with:
-          target: gh-pages
-          path: report
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          path: ./report/tex/ieee_conference/output/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
