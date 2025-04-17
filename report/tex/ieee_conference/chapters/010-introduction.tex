@@ -1,16 +1,28 @@
-\section{Introduction and Problem Understanding}
+\section{Introduction}
+
+This section provides an overview of the challenge, including its context, problem definition, dataset overview and key challenges.
 
 \subsection{Context and Background}
 The ``Plant Seedlings Classification'' challenge, hosted on Kaggle~\cite{plant-seedlings-classification}, presents a real-world problem central to modern agriculture: accurately identifying the species of young seedlings from digital images~\cite{MESHRAM2021100010}.
 
-The dataset described in the paper ``A Public Image Database for Benchmark of Plant Seedling Classification Algorithms''~\cite{DBLP:journals/corr/abs-1711-05458} contains images of approximately \textit{960} unique plants, representing \textit{12} different species. Each image captures a seedling at different growth stages and under different conditions, reflecting the complexities found in real-world agricultural environments. These conditions include differences in lighting, background soil patterns and subtle phenotypic variations that can blur the lines between certain species. The evaluation metric of the competition is a mean~(micro-averaged) F1-score, which encourages balanced performance across classes~\cite{plant-seedlings-classification-evaluation}:
+The dataset described in~\cite{DBLP:journals/corr/abs-1711-05458} contains images of approximately \textit{960} unique plants, representing \textit{12} different species~(see~Fig.~\ref{fig:sample-images}). Each image captures a seedling at different growth stages and under different conditions, reflecting the complexities found in real-world agricultural environments. These conditions include differences in lighting, background soil patterns and subtle phenotypic variations that can blur the lines between certain species.
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=0.9\linewidth]{../../resources/sample_images.png}}
+    \caption{One sample image for each class in the dataset}
+    \label{fig:sample-images}
+\end{figure}
+
+Fig.~\ref{fig:sample-images} shows one sample image for each class in the dataset, illustrating the different species. The images vary in background, lighting and growth stage, highlighting the challenges of visual similarity across species.
+
+The evaluation metric of the competition is a mean~(micro-averaged) F1-score, which encourages balanced performance across classes~\cite{plant-seedlings-classification-evaluation}:
 
 \begin{equation}
-    \text{Precision}_{\text{micro}} = \frac{\sum_{k \in C} TP_k}{\sum_{k \in C} TP_k + FP_k}\label{eq:precision}
+    \text{Precision}_{\text{micro}} = \frac{\sum_{k \in C} \mathit{TP_k}}{\sum_{k \in C} \mathit{TP_k} + \mathit{FP_k}}\label{eq:precision}
 \end{equation}
 
 \begin{equation}
-    \text{Recall}_{\text{micro}} = \frac{\sum_{k \in C} TP_k}{\sum_{k \in C} TP_k + FN_k}\label{eq:recall}
+    \text{Recall}_{\text{micro}} = \frac{\sum_{k \in C} \mathit{TP_k}}{\sum_{k \in C} \mathit{TP_k} + \mathit{FN_k}}\label{eq:recall}
 \end{equation}
 
 \begin{equation}
@@ -23,10 +35,12 @@ where $TP_k$, $FP_k$ and $FN_k$ are the true positive, false positive and false 
 The core objective of the challenge is to build an automated classification model that can take a seedling image as input and accurately predict its species. The following points summarize the task:
 
 \begin{enumerate}
-    \item \textbf{Input:} Test set of \textit{794} images of plant seedlings.
+    \item \textbf{Input:} Train set of \textit{4750} images of plant seedlings.
     \item \textbf{Output:} Classification label for each image, indicating the species of each plant seedling.
     \item \textbf{Goal:} High classification performance as measured by equation~\ref{eq:fscore}.
 \end{enumerate}
+
+The challenge is to develop a model that can generalize well across different species, even when faced with variations in lighting, background and growth stages. A significant risk when dealing with deep learning~(DL) models is overfitting, especially when the dataset is relatively small~\cite[Chapter~1]{bishop2024deep}~\cite[Chapter~5]{Goodfellow-et-al-2016}. Therefore, the model must be designed to learn robust features that can generalize well to unseen data~(see~\ref{subsec:challenges}).
 
 \subsection{Dataset Overview}
 For a better understanding of the dataset, a brief overview of the class distribution and sample images is provided below:
@@ -39,22 +53,14 @@ For a better understanding of the dataset, a brief overview of the class distrib
 
 Fig.~\ref{fig:class-distribution} shows the distribution of classes in the train dataset, with each bar representing the number of images per class. The dataset is imbalanced, with some classes having significantly fewer samples than others. This imbalance can pose a challenge for model training, as the model may struggle to learn the features of underrepresented classes effectively. The most common classes are ``Loose Silky-bent''~(\textit{654}) and ``Common Chickweed''~(\textit{611}), while the least common classes are ``Common wheat'' and ``Maize''~(both \textit{221}).
 
-\begin{figure}[htbp]
-    \centerline{\includegraphics[width=0.9\linewidth]{../../resources/sample_images.png}}
-    \caption{Sample images for each class in the dataset}
-    \label{fig:sample-images}
-\end{figure}
-
-Fig.~\ref{fig:sample-images} shows one sample image for each class in the dataset, illustrating the different species. The images vary in background, lighting and growth stage, highlighting the challenges of visual similarity across species.
-
-\subsection{Key Challenges}
+\subsection{Key Challenges}\label{subsec:challenges}
 Developing robust classification models for this task is not trivial. There are several challenges:
 
 \begin{enumerate}
     \item \textbf{Inter-Class Similarity:} Certain seedlings can look strikingly similar, making it difficult for both humans and machines to distinguish between them.
     \item \textbf{Intra-Class Variability:} Even within a single species, seedlings can vary significantly in appearance due to differences in growth stage, lighting and background. This variability challenges models to learn consistent features that generalize well.
-    \item \textbf{Data Limitations:} With approximately \textit{960} unique plants, the dataset could be considered modest for training deep learning models from scratch. While data augmentation can help to some extent, the relatively small dataset may still limit the complexity of models that can be effectively trained without overfitting.
-    \item \textbf{Model Architecture Complexity:} Choosing the right model architecture, whether a custom CNN trained from scratch or a pre-trained deep CNN / Vision Transformer~(ViT), to learn complex visual features. Deeper models can capture more nuanced differences, but they can also be harder to train and require careful regularization to prevent overfitting.
+    \item \textbf{Data Limitations:} With approximately \textit{960} unique plants, the dataset could be considered modest for training DL models from scratch. While data augmentation can help to some extent~(see~\ref{subsec:regularization-techniques}), the relatively small dataset may still limit the complexity of models that can be effectively trained without overfitting.
+    \item \textbf{Model Architecture Complexity:} Choosing the right model architecture, whether a custom convolutional neural network~(CNN)~\cite{o2015introduction} trained from scratch or a pre-trained deep CNN / Vision Transformer~(ViT)~\cite{DBLP:journals/corr/abs-2010-11929}, to learn complex visual features. Deeper models can capture more nuanced differences, but they can also be harder to train and require careful regularization to prevent overfitting~(see~\ref{subsec:regularization-techniques}).
 \end{enumerate}
 
 By clearly understanding these challenges and the broader context, model architectures can be proposed that address these difficulties. The following chapters discuss the strategies for model design, training optimization, model evaluation and analysis of results, ultimately leading to the approach that best addresses the core challenge of differentiating between plant seedling species. Finally, the conclusion summarizes the key findings and suggests potential areas for future research.
