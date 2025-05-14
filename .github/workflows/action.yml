@@ -28,6 +28,10 @@ jobs:
           latexmk -pdf ./main.tex
           mv ./main.pdf ./output/
 
+          cd ../../beamer/
+          latexmk -pdf ./main.tex
+          mv ./main.pdf ../tex/ieee_conference/output/presentation.pdf
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3.0.1
         with:
