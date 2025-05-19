@@ -3,7 +3,7 @@
 This section provides an overview of the challenge, including its context, problem definition, dataset overview and key challenges.
 
 \subsection{Context and Background}
-The ``Plant Seedlings Classification'' challenge, hosted on Kaggle~\cite{plant-seedlings-classification}, presents a real-world problem central to modern agriculture: accurately identifying the species of young seedlings from digital images~\cite{MESHRAM2021100010}.
+The ``Plant Seedlings Classification'' challenge, hosted on Kaggle~\cite{plant-seedlings-classification}, presents a real-world problem central to modern agriculture: accurately identifying the species of young seedlings from digital images~\cite{MESHRAM2021100010} and distinguishing between weeds and crops~\cite{9317797}.
 
 The dataset described in~\cite{DBLP:journals/corr/abs-1711-05458} contains images of approximately \textit{960} unique plants, representing \textit{12} different species~(see~Fig.~\ref{fig:sample-images}). Each image captures a seedling at different growth stages and under different conditions, reflecting the complexities found in real-world agricultural environments. These conditions include differences in lighting, background soil patterns and subtle phenotypic variations that can blur the lines between certain species.
 
@@ -15,21 +15,21 @@ The dataset described in~\cite{DBLP:journals/corr/abs-1711-05458} contains image
 
 Fig.~\ref{fig:sample-images} shows one sample image for each class in the dataset, illustrating the different species. The images vary in background, lighting and growth stage, highlighting the challenges of visual similarity across species.
 
-The evaluation metric of the competition is a mean~(micro-averaged) F1-score, which encourages balanced performance across classes~\cite{plant-seedlings-classification-evaluation}:
+The evaluation metric of the competition is a mean~(micro-averaged) F1-score, which encourages balanced performance across all classes~$C$~\cite{plant-seedlings-classification-evaluation,manning2009introduction,sokolova2009systematic,takahashi2022confidence}:
 
 \begin{equation}
-    \text{Precision}_{\text{micro}} = \frac{\sum_{k \in C} \mathit{TP_k}}{\sum_{k \in C} \mathit{TP_k} + \mathit{FP_k}}\label{eq:precision}
+    \text{Precision}_{\mu} = \frac{\sum_{i=1}^{C} \mathit{TP_i}}{\sum_{i=1}^{C} (\mathit{TP_i} + \mathit{FP_i})}\label{eq:precision}
 \end{equation}
 
 \begin{equation}
-    \text{Recall}_{\text{micro}} = \frac{\sum_{k \in C} \mathit{TP_k}}{\sum_{k \in C} \mathit{TP_k} + \mathit{FN_k}}\label{eq:recall}
+    \text{Recall}_{\mu} = \frac{\sum_{i=1}^{C}  \mathit{TP_i}}{\sum_{i=1}^{C} (\mathit{TP_i} + \mathit{FN_i})}\label{eq:recall}
 \end{equation}
 
 \begin{equation}
-    F1_{\text{micro}} = \frac{2 \cdot \text{Precision}_{\text{micro}} \cdot \text{Recall}_{\text{micro}}}{\text{Precision}_{\text{micro}} + \text{Recall}_{\text{micro}}}\label{eq:fscore}
+    \text{F1}_{\mu} = \frac{2 \times \text{Precision}_{\mu} \times \text{Recall}_{\mu}}{\text{Precision}_{\mu} + \text{Recall}_{\mu}}\label{eq:fscore}
 \end{equation}
 
-where $TP_k$, $FP_k$ and $FN_k$ are the true positive, false positive and false negative counts for class $k$, respectively and $C$ is the set of all classes. The mean F1-score~(\ref{eq:fscore}) is a balanced measure that considers both precision~(\ref{eq:precision}) and recall~(\ref{eq:recall}) across all classes, making it a suitable evaluation metric for multi-class classification tasks.
+where $TP_i$, $FP_i$ and $FN_i$ are the true positive, false positive and false negative counts for class $i$, respectively and $C$ is the set of all classes. The mean F1-score~(\ref{eq:fscore}) is a balanced measure that considers both precision~(\ref{eq:precision}) and recall~(\ref{eq:recall}) across all classes, making it a suitable evaluation metric for multi-class classification tasks.
 
 \subsection{Problem Definition and Objectives}
 The core objective of the challenge is to build an automated classification model that can take a seedling image as input and accurately predict its species. The following points summarize the task:
@@ -59,8 +59,8 @@ Developing robust classification models for this task is not trivial. There are 
 \begin{enumerate}
     \item \textbf{Inter-Class Similarity:} Certain seedlings can look strikingly similar, making it difficult for both humans and machines to distinguish between them.
     \item \textbf{Intra-Class Variability:} Even within a single species, seedlings can vary significantly in appearance due to differences in growth stage, lighting and background. This variability challenges models to learn consistent features that generalize well.
-    \item \textbf{Data Limitations:} With approximately \textit{960} unique plants, the dataset could be considered modest for training DL models from scratch. While data augmentation can help to some extent~(see~\ref{subsec:regularization-techniques}), the relatively small dataset may still limit the complexity of models that can be effectively trained without overfitting.
-    \item \textbf{Model Architecture Complexity:} Choosing the right model architecture, whether a custom convolutional neural network~(CNN)~\cite{o2015introduction} trained from scratch or a pre-trained deep CNN / Vision Transformer~(ViT)~\cite{DBLP:journals/corr/abs-2010-11929}, to learn complex visual features. Deeper models can capture more nuanced differences, but they can also be harder to train and require careful regularization to prevent overfitting~(see~\ref{subsec:regularization-techniques}).
+    \item \textbf{Data Limitations:} With approximately \textit{960} unique plants, the dataset could be considered modest for training DL models from scratch. While data augmentation can help to some extent~(see~\ref{subsec:regularization-techniques}), the relatively small dataset may still limit the capacity of models that can be effectively trained without overfitting.
+    \item \textbf{Model Architecture Capacity:} Choosing the right model architecture, whether a custom convolutional neural network~(CNN)~\cite{o2015introduction} trained from scratch or a pre-trained deep CNN / Vision Transformer~(ViT)~\cite{DBLP:journals/corr/abs-2010-11929}, to learn complex visual features. Deeper models can capture more nuanced differences, but they can also be harder to train and require careful regularization to prevent overfitting~(see~\ref{subsec:regularization-techniques}).
 \end{enumerate}
 
 By clearly understanding these challenges and the broader context, model architectures can be proposed that address these difficulties. The following chapters discuss the strategies for model design, training optimization, model evaluation and analysis of results, ultimately leading to the approach that best addresses the core challenge of differentiating between plant seedling species. Finally, the conclusion summarizes the key findings and suggests potential areas for future research.

@@ -37,7 +37,7 @@ In this case, all \textit{794} test samples were assigned the class label ``Loos
 
 \subsection{Custom CNN}
 
-The custom CNN architecture was designed to capture features relevant to seedling classification, while being lightweight enough to be effectively trained locally on the given dataset. The model consists of a series of convolutional and pooling layers followed by fully connected layers to learn features hierarchically and make the final class prediction.
+The custom CNN architecture was designed (from scratch) to capture features relevant to seedling classification, while being lightweight enough to be effectively trained locally on the given dataset. The model consists of a series of convolutional and pooling layers followed by fully connected layers to learn features hierarchically and make the final class prediction.
 
 \begin{figure}[htbp]
     \centerline{\includegraphics[width=0.9\linewidth]{../../resources/custom_cnn/architecture.png}}
@@ -45,15 +45,15 @@ The custom CNN architecture was designed to capture features relevant to seedlin
     \label{fig:custom-cnn-architecture}
 \end{figure}
 
-As shown in Fig.~\ref{fig:custom-cnn-architecture}, the network begins with a series of convolutional layers, with the number of filters gradually increasing from \textit{16} to \textit{256}. These convolutional layers, each followed by a Rectified Linear Unit~(ReLU) activation, extract spatial features such as edges, textures and patterns from the images. To reduce spatial dimensions and computational complexity, max-pooling layers are applied after each convolutional block to focus on the most salient features.
+As shown in Fig.~\ref{fig:custom-cnn-architecture}, the network begins with a series of convolutional layers~(blue), with the number of filters gradually increasing from \textit{16} to \textit{256}. These convolutional layers, each followed by a Rectified Linear Unit~(ReLU) activation, extract spatial features such as edges, textures and patterns from the images. To reduce spatial dimensions and computational complexity, max-pooling layers~(gray) are applied after each convolutional block to focus on the most salient features.
 
-After the convolutional and pooling stages, the feature maps are flattened into a 1D vector that serves as the input to the fully connected layers. The first fully connected layer has \textit{128} neurons and captures high-level abstract features, while the final fully connected layer maps these features to the \textit{12} target classes, producing the class probabilities.
+After the convolutional and pooling stages, the feature maps are flattened into a 1D vector that serves as the input to the fully connected layers~(blue). The first fully connected layer has \textit{128} neurons and captures high-level abstract features, while the final fully connected layer maps these features to the \textit{12} target classes~(green), producing the class probabilities.
 
 The final custom CNN model has approximately \textit{2 million} parameters, making it lightweight and computationally efficient compared to the following architectures. The model architecture is designed to capture relevant features for seedling classification while being suitable for training on a moderate-sized dataset.
 
 \subsection{Pre-trained CNN}
 
-As an alternative to training a custom CNN from scratch, a pre-trained CNN can be used to leverage learned features from a large dataset. The pre-trained model ResNet-18~\cite{DBLP:journals/corr/HeZRS15} was used as a feature extractor, where the final classification layer was replaced with a new fully connected layer to predict the \textit{12} plant seedling classes:
+As an alternative to training and building a custom CNN from scratch, a pre-trained CNN can be used to leverage learned features from a large dataset. The pre-trained model ResNet-18~\cite{DBLP:journals/corr/HeZRS15} was used as a feature extractor, where the final classification layer was replaced with a new fully connected layer to predict the \textit{12} plant seedling classes:
 
 \begin{minipage}{0.9\linewidth}\begin{lstlisting}[caption={Replacing the final classification layer of a pre-trained ResNet-18 model.},label={lst:pre-trained-cnn}]
 from torchvision import models

@@ -5,3 +5,7 @@
 ### Report
 
 https://luckerma.github.io/dl_project/main.pdf
+
+### Presentation
+
+https://luckerma.github.io/dl_project/presentation.pdf

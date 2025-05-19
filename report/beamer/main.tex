@@ -43,16 +43,17 @@
             \item \textbf{Input:\\}Train set of \textit{4750} images of plant seedlings
             \item \textbf{Output:\\}Classification label for each image, indicating the species of each plant seedling
             \item \textbf{Goal:\\}High classification performance as measured by equation~\ref{eq:fscore}
+            \item[] \cite{plant-seedlings-classification-evaluation,manning2009introduction,sokolova2009systematic,takahashi2022confidence}
         \end{itemize}
         \column{0.6\textwidth}
         \begin{equation}
-            \text{Precision}_{\text{micro}} = \frac{\sum_{k \in C} \mathit{TP_k}}{\sum_{k \in C} \mathit{TP_k} + \mathit{FP_k}}\label{eq:precision}
+            \text{Precision}_{\mu} = \frac{\sum_{i=1}^{C} \mathit{TP_i}}{\sum_{i=1}^{C} (\mathit{TP_i} + \mathit{FP_i})}\label{eq:precision}
         \end{equation}
         \begin{equation}
-            \text{Recall}_{\text{micro}} = \frac{\sum_{k \in C} \mathit{TP_k}}{\sum_{k \in C} \mathit{TP_k} + \mathit{FN_k}}\label{eq:recall}
+            \text{Recall}_{\mu} = \frac{\sum_{i=1}^{C}  \mathit{TP_i}}{\sum_{i=1}^{C} (\mathit{TP_i} + \mathit{FN_i})}\label{eq:recall}
         \end{equation}
         \begin{equation}
-            F1_{\text{micro}} = \frac{2 \cdot \text{Precision}_{\text{micro}} \cdot \text{Recall}_{\text{micro}}}{\text{Precision}_{\text{micro}} + \text{Recall}_{\text{micro}}}\label{eq:fscore}
+            \text{F1}_{\mu} = \frac{2 \times \text{Precision}_{\mu} \times \text{Recall}_{\mu}}{\text{Precision}_{\mu} + \text{Recall}_{\mu}}\label{eq:fscore}
         \end{equation}
     \end{columns}
 \end{frame}
